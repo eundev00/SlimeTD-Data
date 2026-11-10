@@ -102,7 +102,7 @@
 | codeName | 영문 코드명. 에셋 이름 `TowerData_<코드명>`에 쓰인다 |
 | name | 화면에 보이는 이름 |
 | gradeId | 등급 ID |
-| attackType | 공격 방식 `TowerAttackType`: `Melee`(근접) / `Projectile`(투사체) / `Beam`(즉시 타격 빔). `Projectile`이면 `TowerProjectiles.csv`에 행이 있어야 한다. 클라이언트는 아직 `TowerData` 인스펙터 값을 쓰고, 임포터는 이 열을 읽지 않는다 |
+| attackType | 공격 방식 `TowerAttackType`: `Melee`(근접) / `Projectile`(투사체) / `Beam`(즉시 타격 빔). `Projectile`이면 `TowerProjectiles.csv`에 행이 있어야 한다. 투사체가 어떻게 생겼는지(프리팹)는 클라이언트가 정한다 |
 | enabled | 활성 (1/0) |
 | attackRange | 사거리 |
 | attackCooldown | 공격 쿨다운(초) |
@@ -123,7 +123,7 @@
 | hitRadius | 충돌 판정 반경. 비행 경로에서 이 반경 안에 들어온 슬라임을 맞힌다 |
 | lifetime | 수명(초). 이 시간 안에 아무것도 못 맞히면 사라진다 |
 
-- 클라이언트는 아직 투사체 프리팹(`ArcherArrow`, `CrossbowBolt`, `GoodSlimeBall`)의 `Projectile` 컴포넌트 값을 쓴다. 지금 값은 거기서 옮겼다 (레인저는 궁수와 같은 `ArcherArrow`)
+- 값은 클라이언트 투사체 프리팹(`ArcherArrow`, `CrossbowBolt`, `GoodSlimeBall`)의 `Projectile` 컴포넌트에서 옮겼다. 모노리스(301)는 빔처럼 보이는 투사체이고 값은 착한 슬라임과 같다. 클라이언트는 이 시트 값을 `TowerData`로 받아 투사체에 적용하고, 프리팹은 모양만 정한다
 - 빔 전용 값이 생기면 같은 방식으로 `TowerBeams.csv`를 만든다
 
 ## HunterCardGachaPacks.csv
