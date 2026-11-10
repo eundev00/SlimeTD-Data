@@ -31,6 +31,12 @@
 
 ## 커밋 / 푸시
 
+**이 저장소는 서버 세션과 클라이언트 세션이 같이 커밋한다.** 그래서 순서를 지킨다.
+
+1. **작업 전**: `git fetch` 후 원격에만 있는 커밋(`git log HEAD..origin/main`)과 로컬 미커밋 변경(`git status`)을 확인하고, `git pull --ff-only`로 받은 다음 수정을 시작한다. 받은 변경 중 지금 작업과 겹치는 파일이 있으면 내용을 먼저 읽는다
+2. **푸시 전**: 다시 `git fetch`로 원격에 새 커밋이 없는지 확인한다. 있으면 받아서(`git pull --rebase`) 겹치는 부분을 확인하고 시트 검사를 다시 한 뒤 푸시한다
+3. 다른 세션의 커밋을 덮어쓰거나 되돌리지 않는다. 충돌이 나면 사용자에게 먼저 보고한다
+
 PC에 git이 PATH에 없다. 서버 저장소와 같은 방법을 쓴다.
 
 - git 실행 파일: `C:\Users\eunv0\AppData\Local\GitHubDesktop\app-3.6.6\resources\app\git\cmd\git.exe`
