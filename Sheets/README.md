@@ -1,6 +1,10 @@
 # 시트 편집 가이드
 
-시트는 UTF-8 CSV이고 **1줄이 영문 열 이름**이다. 숫자는 시트에서만 고치며, 고친 뒤 메뉴로 임포트한다. 이 폴더의 숫자를 인스펙터에서 직접 고치면 다음 임포트 때 덮어써진다.
+이 폴더가 기획 데이터의 원본이다. 서버와 클라이언트는 여기서 받아 쓰고, 각자 복사본을 고치지 않는다.
+
+시트는 UTF-8(BOM) CSV, CRLF 줄바꿈이고 **1줄이 영문 열 이름**이다. 새 시트도 같은 형식으로 만든다.
+
+클라이언트가 아직 이 저장소를 직접 읽지 않으므로, 고친 시트는 클라이언트 `Assets/Datas/Sheets/`에 복사한 뒤 아래 메뉴로 임포트한다. 클라이언트에서 숫자를 인스펙터로 고치면 다음 임포트 때 덮어써진다.
 
 - 타워/등급/레벨업 비용: `SlimeTD > Data > Import Tower Sheets`
 - 스킬: `SlimeTD > Data > Import Skill Sheets`
@@ -16,6 +20,24 @@
 | 타워 | 101~ (3자리) |
 | 스킬 | 타워ID×100+순번 (궁수 10101~, 일병 10301~). 추가는 그 타워의 다음 빈 번호 |
 | 뽑기 팩 | 1001~ (4자리) |
+| 웨이브 테이블 | 11~ (2자리) |
+| 슬라임 | 6자리. 일반 100001~, 보스 100101~ (같은 구간의 일반과 보스는 끝 두 자리를 맞춘다) |
+
+## 열 용도
+
+변환 도구는 열 용도에 따라 서버용과 클라이언트용 데이터를 나눠 내보낸다. **아래 표에 없는 열은 `both`**(서버와 클라이언트 모두 사용)다. 전투 결과에 영향을 주는 수치는 서버가 계산하므로 `both`다.
+
+| 시트 | 열 | 용도 | 이유 |
+|---|---|---|---|
+| Grades | name | client | 화면 표시용 |
+| Towers | name | client | 화면 표시용 |
+| Skills | name, description | client | 화면 표시용 |
+| Skills | vfxKey, vfxAnchor | client | 연출용 |
+| Skills | animTrigger | client | 연출용. 단, 공격 타격 시점은 애니메이션 클립이 정하므로 서버용 타이밍 데이터가 따로 필요하다 (미정) |
+| Slimes | renderGroup | client | 렌더링 순서용 |
+| GameConfig | initialLobbyGold, initialGem, initialHunterCards | server | 새 계정 생성은 서버만 한다 |
+
+프리팹, 썸네일, 머티리얼 같은 Unity 에셋 연결은 시트에 넣지 않는다. 클라이언트가 `codeName`으로 찾아 인스펙터에서 연결한다.
 
 ## Grades.csv
 
@@ -119,3 +141,63 @@
 **스킬이 발동한 공격은 치명타 판정을 하지 않는다.** 데미지에 영향을 주는 OnAttack 스킬(MultiShot, DamageMultiplier, Splash)이 터지면 그 공격의 화살 전부가 치명타 없이 같은 데미지가 된다. Always 패시브와 JellyGain은 해당하지 않는다. chance와 cooldown은 함께 쓸 수 있고, 쿨타임은 공격속도와 무관하게 발동했을 때부터 흐른다.
 
 허용되지 않는 단위를 쓰거나 해석할 수 없는 값이 있는 행은 임포트 로그에 이유를 남기고 건너뛴다.
+
+## Slimes.csv
+
+클라이언트에서는 아직 `Assets/Datas/Slimes/*.asset`(ScriptableObject)이 원본이다. 이 시트는 그 값을 옮긴 것이고, 클라이언트 임포터가 생기기 전까지 양쪽 값을 같이 맞춘다.
+
+| 열 | 설명 |
+|---|---|
+| slimeId | 슬라임 ID (6자리) |
+| codeName | 영문 코드명. 클라이언트 에셋 이름(`Slime_01`, `Boss_01`)과 같다. 프리팹 연결 키 |
+| kind | `Normal` / `Boss` |
+| baseHealth | 일반: 웨이브 성장률 적용 전 기본 HP / 보스: 이 값 그대로 |
+| baseSpeed | 이동 속도 |
+| lifeCost | 경로 끝 도달 시 차감 라이프 |
+| jellyReward | 처치 젤리 |
+| instantGameOver | 보스만. 1이면 경로 끝 도달 시 즉시 게임오버, 0이면 `lifeCost`만큼 차감. 일반은 비운다 |
+| renderGroup | 렌더링 버킷 `Normal` / `Boss` |
+
+## WaveTables.csv
+
+스테이지(난이도)마다 한 행. 원본은 클라이언트 `WaveTableData` 에셋이다.
+
+| 열 | 설명 |
+|---|---|
+| tableId | 웨이브 테이블 ID (2자리) |
+| codeName | 영문 코드명 (`Easy` → 클라이언트 `WaveEasyTable`) |
+| spawnInterval | 슬라임 간 스폰 간격(초). 전 웨이브 공통 |
+| interWaveDelay | 웨이브 간 대기(초) |
+| normalHpGrowth | 웨이브당 HP 증가율(복리, 0.06 = 6%). 일반 슬라임에만 적용 |
+
+## WaveZones.csv
+
+테이블의 구간 목록. 한 구간은 10웨이브이고, 1~9번째는 일반 슬라임, 10번째는 보스 단독이다. 최종 웨이브 = 구간 수 × 10.
+
+| 열 | 설명 |
+|---|---|
+| tableId | 소속 웨이브 테이블 |
+| zone | 구간 순번 (1부터, 빠짐없이) |
+| slimeId | 구간 1~9번째 웨이브 슬라임 (`kind` = Normal) |
+| count | 일반 웨이브 마릿수 |
+| bossId | 구간 10번째 웨이브 보스 (`kind` = Boss) |
+| bossExtraStartDelay | 보스 웨이브 시작 전 추가 대기(초) |
+
+계산식: 일반 HP = `baseHealth × (1 + normalHpGrowth)^(웨이브 - 1)`, 보스 HP = `baseHealth`.
+
+## GameConfig.csv
+
+`key,value` 두 열이다. 원본은 클라이언트 `GameConfig` 에셋이다 (에셋에 저장되지 않은 값은 코드 기본값을 옮겼다). 디버그용 값(`ignoreJellyCost`, `autoStartWave`, `testTower`, `debugTowerLevel`)은 클라이언트 개발 설정이라 넣지 않는다.
+
+| key | 설명 |
+|---|---|
+| startingLife | 스테이지 시작 라이프 |
+| startingJelly | 스테이지 시작 젤리 |
+| summonBaseCost | 소환 비용 기본값. 비용 = 기본 + 증가 × 소환 횟수 |
+| summonCostIncrease | 소환 1회당 비용 증가 |
+| summonGradeId | 소환 등급 |
+| initialLobbyGold | 새 계정 시작 골드 (개발용 임시) |
+| initialGem | 새 계정 시작 보석 (개발용 임시) |
+| initialHunterCards | 새 계정 헌터별 시작 카드 (개발용 임시) |
+| slowMinSpeedRatio | 감속 하한. 기본 속도의 이 비율 밑으로 내려가지 않는다 |
+| bossSlowScale | 보스에게 걸리는 감속 비율 |

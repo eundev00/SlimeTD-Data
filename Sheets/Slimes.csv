@@ -1,0 +1,11 @@
+﻿slimeId,codeName,kind,baseHealth,baseSpeed,lifeCost,jellyReward,instantGameOver,renderGroup
+100001,Slime_01,Normal,50,1,1,1,,Normal
+100002,Slime_02,Normal,120,1,1,1,,Normal
+100003,Slime_03,Normal,140,1,1,1,,Normal
+100004,Slime_04,Normal,160,1,1,1,,Normal
+100005,Slime_05,Normal,180,1,1,1,,Normal
+100101,Boss_01,Boss,5000,0.7,10,100,1,Boss
+100102,Boss_02,Boss,14000,0.7,5,100,1,Boss
+100103,Boss_03,Boss,38000,0.6,10,100,1,Boss
+100104,Boss_04,Boss,93000,0.6,10,100,1,Boss
+100105,Boss_05,Boss,219000,0.6,10,100,1,Boss
