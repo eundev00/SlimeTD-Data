@@ -33,3 +33,6 @@ VfxAnchor,Root,0,발밑 (클라이언트 값)
 VfxAnchor,Center,1,몸 중앙
 VfxAnchor,Head,2,머리
 VfxAnchor,Front,3,앞
+TowerAttackType,Melee,0,근접 (클라이언트 값)
+TowerAttackType,Projectile,1,투사체
+TowerAttackType,Beam,2,즉시 타격 빔

@@ -18,7 +18,7 @@ description: SlimeTD-Data의 Sheets/*.csv와 Sheets/Waves/*.csv 기획 데이터
 
 ## 시트 목록
 
-- 표 형식: Enums, Grades, LevelUpCosts, Towers, Skills, HunterCardGachaPacks, Slimes, Stages, Items, NewAccount
+- 표 형식: Enums, Grades, LevelUpCosts, Towers, TowerProjectiles, Skills, HunterCardGachaPacks, Slimes, Stages, Items, NewAccount
 - `key,value` 형식: HunterCardGachaSettings, GameConstants
 - 스테이지 웨이브: `Waves/<Stages.codeName>.csv` (스테이지마다 하나)
 
@@ -34,11 +34,11 @@ description: SlimeTD-Data의 Sheets/*.csv와 Sheets/Waves/*.csv 기획 데이터
 
 ### B. 이넘
 7. `Enums.csv`: (enumName, name)이 중복되지 않고, 같은 이넘 안에서 value가 중복되지 않는다. value는 정수다
-8. 새 이넘은 1부터 시작한다. 단, 클라이언트 이넘(`SkillTrigger`, `SkillEffectType`, `VfxAnchor`, `SlimeRenderGroup`)은 클라이언트 값(0부터)을 쓴다
+8. 새 이넘은 1부터 시작한다. 단, 클라이언트 이넘(`SkillTrigger`, `SkillEffectType`, `VfxAnchor`, `SlimeRenderGroup`, `TowerAttackType`)은 클라이언트 값(0부터)을 쓴다
 9. 선택지 열의 값이 `Enums.csv`의 해당 이넘 이름에 있다 (README `Enums.csv`의 "시트.열 → 이넘" 표 기준)
 
 ### C. ID
-10. 각 시트의 키가 중복되지 않는다 (`LevelUpCosts`는 gradeId+level, 웨이브 파일은 wave+order, key,value 시트는 key)
+10. 각 시트의 키가 중복되지 않는다 (`LevelUpCosts`는 gradeId+level, `TowerProjectiles`는 towerId, 웨이브 파일은 wave+order, key,value 시트는 key)
 11. ID 자릿수: 등급 1, 스테이지 2, 타워 3, 뽑기 팩 4, 스킬 5, 슬라임 6, 아이템 7
 12. 모든 시트의 ID를 통틀어 같은 값이 없다 (이넘 value는 ID가 아니므로 제외)
 13. 스킬 ID = 타워ID×100+순번 (`skillId / 100 == towerId`)
@@ -49,7 +49,7 @@ description: SlimeTD-Data의 Sheets/*.csv와 Sheets/Waves/*.csv 기획 데이터
 ### D. 참조
 17. `Towers.gradeId`, `LevelUpCosts.gradeId`, `HunterCardGachaSettings.pityGradeId`, `GameConstants.summonGradeId` → Grades
 18. `HunterCardGachaPacks.guaranteeGradeId` → Grades (0은 보장 없음)
-19. `Skills.towerId` → Towers, `Skills.upgradeOf` → Skills
+19. `Skills.towerId`, `TowerProjectiles.towerId` → Towers, `Skills.upgradeOf` → Skills
 20. 웨이브 파일의 `slimeId` → Slimes
 21. `Items.targetId` → HunterCardPack이면 HunterCardGachaPacks.packId
 22. `NewAccount.itemId` → Items
@@ -66,6 +66,7 @@ description: SlimeTD-Data의 Sheets/*.csv와 Sheets/Waves/*.csv 기획 데이터
     - Stun은 `duration` 필수. `value`는 쓰지 않지만 클라이언트 임포터 때문에 비우지 않는다
 25. **LevelUpCosts**: Grades의 모든 등급에 레벨 1~14가 빠짐없이 있다. `cards`, `gold`는 0 이상
 26. **Towers**: attackRange, attackCooldown > 0, critChance 0~100, critBonus/unlockGemPrice ≥ 0. 잠긴 헌터(`startUnlocked`가 1이 아님)인데 `unlockGemPrice`가 0이면 경고 (구매 불가)
+    - **TowerProjectiles**: `attackType=Projectile`인 타워는 행이 반드시 있고, 다른 타워는 행이 없다. speed, hitRadius, lifetime > 0
 27. **Grades**: baseAttack > 0, attackGrowthRate/gachaWeight ≥ 0
 28. **뽑기**: 팩 cardCount ≥ 1, price ≥ 0. 설정 lockedCardChance 0~100, pityCount ≥ 1, maxLevelRefundGold ≥ 0
 29. **Slimes**: Boss는 `instantGameOver` 필수, Normal은 비운다(경고). `renderGroup`이 `kind`와 다르면 경고. baseHealth, baseSpeed > 0, lifeCost, jellyReward ≥ 0

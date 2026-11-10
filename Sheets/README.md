@@ -57,12 +57,13 @@
 | description | 설명 |
 
 - 새 이넘은 1부터 시작하고 0은 "없음"으로 비워 둔다
-- 클라이언트에 이미 있는 이넘(`SkillTrigger`, `SkillEffectType`, `VfxAnchor`, `SlimeRenderGroup`)은 에셋·프리팹에 숫자로 저장돼 있을 수 있어 **클라이언트 값(0부터)을 그대로** 쓴다
+- 클라이언트에 이미 있는 이넘(`SkillTrigger`, `SkillEffectType`, `VfxAnchor`, `SlimeRenderGroup`, `TowerAttackType`)은 에셋·프리팹에 숫자로 저장돼 있을 수 있어 **클라이언트 값(0부터)을 그대로** 쓴다
 
 | 시트.열 | 이넘 |
 |---|---|
 | Stages.mode | GameMode |
 | Stages.difficulty | Difficulty |
+| Towers.attackType | TowerAttackType |
 | Skills.trigger | SkillTrigger |
 | Skills.effectType | SkillEffectType |
 | Skills.vfxAnchor | VfxAnchor |
@@ -101,6 +102,7 @@
 | codeName | 영문 코드명. 에셋 이름 `TowerData_<코드명>`에 쓰인다 |
 | name | 화면에 보이는 이름 |
 | gradeId | 등급 ID |
+| attackType | 공격 방식 `TowerAttackType`: `Melee`(근접) / `Projectile`(투사체) / `Beam`(즉시 타격 빔). `Projectile`이면 `TowerProjectiles.csv`에 행이 있어야 한다. 클라이언트는 아직 `TowerData` 인스펙터 값을 쓰고, 임포터는 이 열을 읽지 않는다 |
 | enabled | 활성 (1/0) |
 | attackRange | 사거리 |
 | attackCooldown | 공격 쿨다운(초) |
@@ -109,6 +111,20 @@
 | startUnlocked | 시작 해금 (1/0). 타워마다 지정한다. 비우면 잠금 |
 | unlockGemPrice | 해금 보석 가격 (0 = 구매 불가) |
 | inGacha | 뽑기 대상 (1/0). 비우면 1. 잠긴 헌터는 잠긴 카드로만 나오고, 해금되면 등급 풀에 들어간다 |
+
+## TowerProjectiles.csv
+
+투사체를 쓰는 타워(`attackType=Projectile`)만 한 행씩 둔다. 키는 `towerId`이고, 타워와 1:1이라 별도 ID가 없다. 투사체 관련 값이 늘어나면 `Towers.csv`가 아니라 여기에 열을 추가한다. 투사체는 발사 시점의 목표 위치로 직진하며 추적하지 않는다 (경로상 다른 슬라임과 부딪히면 그쪽을 맞힌다).
+
+| 열 | 설명 |
+|---|---|
+| towerId | 타워 ID (`Towers.csv`) |
+| speed | 비행 속도 (초당 거리) |
+| hitRadius | 충돌 판정 반경. 비행 경로에서 이 반경 안에 들어온 슬라임을 맞힌다 |
+| lifetime | 수명(초). 이 시간 안에 아무것도 못 맞히면 사라진다 |
+
+- 클라이언트는 아직 투사체 프리팹(`ArcherArrow`, `CrossbowBolt`, `GoodSlimeBall`)의 `Projectile` 컴포넌트 값을 쓴다. 지금 값은 거기서 옮겼다 (레인저는 궁수와 같은 `ArcherArrow`)
+- 빔 전용 값이 생기면 같은 방식으로 `TowerBeams.csv`를 만든다
 
 ## HunterCardGachaPacks.csv
 
