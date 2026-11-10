@@ -216,9 +216,9 @@
 
 개발용 임시 값이다 (골드 10000, 보석 10000). 클라이언트 `GameConfig`의 헌터별 시작 카드 100장은 특정 헌터 카드 아이템이 생기면 행으로 추가한다.
 
-## BattleConstants.csv
+## GameConstants.csv
 
-인게임 전투 규칙 상수. `key,value` 두 열이다. 원본은 클라이언트 `GameConfig` 에셋이다 (에셋에 저장되지 않은 값은 코드 기본값을 옮겼다). 디버그용 값(`ignoreJellyCost`, `autoStartWave`, `testTower`, `debugTowerLevel`)은 클라이언트 개발 설정이라 넣지 않는다.
+게임 전역 상수. 행이 하나뿐인 값은 모두 여기에 둔다 (지금은 인게임 전투 규칙만 있다). `key,value` 두 열이다. 값이 늘면 키에 묶음 접두어(`summon.` 등)를 붙인다. 원본은 클라이언트 `GameConfig` 에셋이다 (에셋에 저장되지 않은 값은 코드 기본값을 옮겼다). 디버그용 값(`ignoreJellyCost`, `autoStartWave`, `testTower`, `debugTowerLevel`)은 클라이언트 개발 설정이라 넣지 않는다.
 
 | key | 설명 |
 |---|---|
