@@ -4,8 +4,5 @@ startingJelly,50
 summonBaseCost,10
 summonCostIncrease,2
 summonGradeId,1
-initialLobbyGold,10000
-initialGem,10000
-initialHunterCards,100
 slowMinSpeedRatio,0.25
 bossSlowScale,0.5

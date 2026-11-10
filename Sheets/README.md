@@ -22,6 +22,7 @@
 | 뽑기 팩 | 1001~ (4자리) |
 | 웨이브 테이블 | 11~ (2자리) |
 | 슬라임 | 6자리. 일반 100001~, 보스 100101~ (같은 구간의 일반과 보스는 끝 두 자리를 맞춘다) |
+| 아이템 | 7자리. 재화 1000001~, 헌터 카드 팩 2100000+팩ID (1장 팩 1001 → 2101001), 특정 헌터 카드 2000000+타워ID (예정, 궁수 101 → 2000101) |
 
 ## 열 용도
 
@@ -35,7 +36,8 @@
 | Skills | vfxKey, vfxAnchor | client | 연출용 |
 | Skills | animTrigger | client | 연출용. 단, 공격 타격 시점은 애니메이션 클립이 정하므로 서버용 타이밍 데이터가 따로 필요하다 (미정) |
 | Slimes | renderGroup | client | 렌더링 순서용 |
-| GameConfig | initialLobbyGold, initialGem, initialHunterCards | server | 새 계정 생성은 서버만 한다 |
+| Items | name | client | 화면 표시용 |
+| NewAccount | (전체) | server | 새 계정 생성은 서버만 한다 |
 
 프리팹, 썸네일, 머티리얼 같은 Unity 에셋 연결은 시트에 넣지 않는다. 클라이언트가 `codeName`으로 찾아 인스펙터에서 연결한다.
 
@@ -185,9 +187,38 @@
 
 계산식: 일반 HP = `baseHealth × (1 + normalHpGrowth)^(웨이브 - 1)`, 보스 HP = `baseHealth`.
 
-## GameConfig.csv
+## Items.csv
 
-`key,value` 두 열이다. 원본은 클라이언트 `GameConfig` 에셋이다 (에셋에 저장되지 않은 값은 코드 기본값을 옮겼다). 디버그용 값(`ignoreJellyCost`, `autoStartWave`, `testTower`, `debugTowerLevel`)은 클라이언트 개발 설정이라 넣지 않는다.
+게임 안에서 주고받는 모든 것(재화, 헌터 카드 팩 등)의 목록이다. 보상, 우편, 상점, 새 계정 지급은 모두 `itemId + 수량`으로 표현한다. 아이템 테이블은 "무엇이 있는가"만 정의하고, 내용물이나 효과는 종류별 시트가 정한다 (헌터 카드 팩 → `HunterCardGachaPacks.csv`).
+
+| 열 | 설명 |
+|---|---|
+| itemId | 아이템 ID (7자리, 대역은 ID 규칙 참고) |
+| codeName | 영문 코드명. 클라이언트 아이콘·표시 연결 키. 재화는 클라이언트 `CurrencyType`(`Gold`, `Gem`)과 같은 이름이다 |
+| name | 화면에 보이는 이름 |
+| itemType | `Currency`(재화) / `HunterCardPack`(헌터 카드 팩). 예정: `HunterCard`(특정 헌터 카드) |
+| targetId | 연결 대상. `HunterCardPack`은 `HunterCardGachaPacks.csv`의 팩 ID |
+| openMode | `OnAcquire`: 인벤토리에 들어오는 순간(우편 받기 등) 판정해서 결과로 바꿔 지급한다. 비우면 그대로 보관 |
+| scope | 보관 위치. `Account`: 계정에 저장 / `Battle`: 스테이지 안에서만 쓰고 사라짐. `OnAcquire` 아이템은 보관되지 않으므로 비운다 |
+
+- **헌터 카드 팩 판정**: 팩의 장수와 보장 등급(`HunterCardGachaPacks.csv`)과 뽑기 설정(`HunterCardGachaSettings.csv`)으로 판정한다
+- **천장**: 상점에서 골드로 산 팩만 천장 카운트에 포함한다. 우편·선물·보상으로 받은 팩은 천장과 무관하게 판정한다
+- **특정 헌터 카드**(`HunterCard`, 예: 궁수 카드)는 예정이다. 추가할 때 ID는 2000000+타워ID, `targetId`는 타워 ID로 한다
+
+## NewAccount.csv
+
+새 계정을 만들 때 지급하는 아이템. 한 행이 한 아이템이다.
+
+| 열 | 설명 |
+|---|---|
+| itemId | `Items.csv`의 아이템 ID. `scope`가 `Account`인 아이템만 쓸 수 있다 |
+| amount | 지급 수량 |
+
+개발용 임시 값이다 (골드 10000, 보석 10000). 클라이언트 `GameConfig`의 헌터별 시작 카드 100장은 특정 헌터 카드 아이템이 생기면 행으로 추가한다.
+
+## BattleConstants.csv
+
+인게임 전투 규칙 상수. `key,value` 두 열이다. 원본은 클라이언트 `GameConfig` 에셋이다 (에셋에 저장되지 않은 값은 코드 기본값을 옮겼다). 디버그용 값(`ignoreJellyCost`, `autoStartWave`, `testTower`, `debugTowerLevel`)은 클라이언트 개발 설정이라 넣지 않는다.
 
 | key | 설명 |
 |---|---|
@@ -196,8 +227,5 @@
 | summonBaseCost | 소환 비용 기본값. 비용 = 기본 + 증가 × 소환 횟수 |
 | summonCostIncrease | 소환 1회당 비용 증가 |
 | summonGradeId | 소환 등급 |
-| initialLobbyGold | 새 계정 시작 골드 (개발용 임시) |
-| initialGem | 새 계정 시작 보석 (개발용 임시) |
-| initialHunterCards | 새 계정 헌터별 시작 카드 (개발용 임시) |
 | slowMinSpeedRatio | 감속 하한. 기본 속도의 이 비율 밑으로 내려가지 않는다 |
 | bossSlowScale | 보스에게 걸리는 감속 비율 |

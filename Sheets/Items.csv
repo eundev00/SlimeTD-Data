@@ -1,0 +1,6 @@
+﻿itemId,codeName,name,itemType,targetId,openMode,scope
+1000001,Gold,골드,Currency,,,Account
+1000002,Gem,보석,Currency,,,Account
+1000003,Jelly,젤리,Currency,,,Battle
+2101001,HunterCardPack_1,헌터 카드 1장 팩,HunterCardPack,1001,OnAcquire,
+2101002,HunterCardPack_10,헌터 카드 10장 팩,HunterCardPack,1002,OnAcquire,
