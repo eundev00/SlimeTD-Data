@@ -1,0 +1,35 @@
+﻿enumName,name,value,description
+GameMode,Single,1,싱글
+GameMode,Multi,2,멀티
+Difficulty,Normal,1,보통
+Difficulty,Hard,2,어려움
+Difficulty,Hell,3,지옥
+ItemType,Currency,1,재화
+ItemType,HunterCardPack,2,헌터 카드 팩
+ItemScope,Account,1,계정에 저장
+ItemScope,Battle,2,스테이지 안에서만 쓰고 사라짐
+OpenMode,OnAcquire,1,인벤토리에 들어오는 순간 판정
+SlimeKind,Normal,1,일반 슬라임
+SlimeKind,Boss,2,보스
+SlimeRenderGroup,Normal,0,일반 렌더링 버킷 (클라이언트 값)
+SlimeRenderGroup,Boss,1,보스 렌더링 버킷 (클라이언트 값)
+SkillTrigger,Always,0,상시 (클라이언트 값)
+SkillTrigger,OnAttack,1,공격할 때
+SkillTrigger,OnHit,2,맞혔을 때
+SkillTrigger,OnKill,3,처치했을 때
+SkillTrigger,EveryNthAttack,4,N번째 공격마다
+SkillEffectType,CritChance,0,치명타 확률 (클라이언트 값)
+SkillEffectType,CritBonus,1,치명타 보너스
+SkillEffectType,AttackSpeed,2,공격속도
+SkillEffectType,Attack,3,공격력
+SkillEffectType,MultiShot,4,추가 발사
+SkillEffectType,Pierce,5,관통
+SkillEffectType,Slow,6,감속
+SkillEffectType,JellyGain,7,젤리 획득
+SkillEffectType,DamageMultiplier,8,피해 배율
+SkillEffectType,Splash,9,광역
+SkillEffectType,Stun,10,기절
+VfxAnchor,Root,0,발밑 (클라이언트 값)
+VfxAnchor,Center,1,몸 중앙
+VfxAnchor,Head,2,머리
+VfxAnchor,Front,3,앞

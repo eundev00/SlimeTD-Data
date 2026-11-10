@@ -2,7 +2,7 @@
 
 이 폴더가 기획 데이터의 원본이다. 서버와 클라이언트는 여기서 받아 쓰고, 각자 복사본을 고치지 않는다.
 
-시트는 UTF-8(BOM) CSV, CRLF 줄바꿈이고 **1줄이 영문 열 이름**이다. 새 시트도 같은 형식으로 만든다.
+스테이지별 웨이브는 `Waves/` 폴더에 스테이지마다 파일 하나씩 둔다. 시트는 UTF-8(BOM) CSV, CRLF 줄바꿈이고 **1줄이 영문 열 이름**이다. 새 시트도 같은 형식으로 만든다.
 
 클라이언트가 아직 이 저장소를 직접 읽지 않으므로, 고친 시트는 클라이언트 `Assets/Datas/Sheets/`에 복사한 뒤 아래 메뉴로 임포트한다. 클라이언트에서 숫자를 인스펙터로 고치면 다음 임포트 때 덮어써진다.
 
@@ -20,9 +20,11 @@
 | 타워 | 101~ (3자리) |
 | 스킬 | 타워ID×100+순번 (궁수 10101~, 일병 10301~). 추가는 그 타워의 다음 빈 번호 |
 | 뽑기 팩 | 1001~ (4자리) |
-| 웨이브 테이블 | 11~ (2자리) |
-| 슬라임 | 6자리. 일반 100001~, 보스 100101~ (같은 구간의 일반과 보스는 끝 두 자리를 맞춘다) |
+| 스테이지 | 2자리. 앞자리 = 모드(`GameMode` 값), 뒷자리 = 난이도(`Difficulty` 값). 11 싱글 보통, 12 싱글 어려움, 13 싱글 지옥, 21 멀티 보통, 22 멀티 어려움, 23 멀티 지옥 |
+| 슬라임 | 6자리. 일반 100001~, 보스 100101~ (등장 순서대로 번호를 붙인다) |
 | 아이템 | 7자리. 재화 1000001~, 헌터 카드 팩 2100000+팩ID (1장 팩 1001 → 2101001), 특정 헌터 카드 2000000+타워ID (예정, 궁수 101 → 2000101) |
+
+`Enums.csv`의 `value`는 ID가 아니다. 이넘 안에서만 겹치지 않으면 된다.
 
 ## 열 용도
 
@@ -36,10 +38,39 @@
 | Skills | vfxKey, vfxAnchor | client | 연출용 |
 | Skills | animTrigger | client | 연출용. 단, 공격 타격 시점은 애니메이션 클립이 정하므로 서버용 타이밍 데이터가 따로 필요하다 (미정) |
 | Slimes | renderGroup | client | 렌더링 순서용 |
+| Stages | name | client | 화면 표시용 |
+| Enums | description | client | 설명용 |
 | Items | name | client | 화면 표시용 |
 | NewAccount | (전체) | server | 새 계정 생성은 서버만 한다 |
 
 프리팹, 썸네일, 머티리얼 같은 Unity 에셋 연결은 시트에 넣지 않는다. 클라이언트가 `codeName`으로 찾아 인스펙터에서 연결한다.
+
+## Enums.csv
+
+이넘 정의. 이넘은 **코드가 값에 따라 다르게 동작하는 종류**이고, 새 값을 추가하면 서버·클라이언트 코드도 같이 바꿔야 한다. 행을 늘리는 목록(타워, 아이템, 재화, 스테이지 등)은 이넘이 아니라 시트(ID)로 둔다. 재화가 이넘이 아닌 이유도 같다 (`Items.csv`).
+
+| 열 | 설명 |
+|---|---|
+| enumName | 이넘 이름 |
+| name | 값 이름. **다른 시트의 선택지 열에는 이 이름을 적는다** |
+| value | 정수 값. DB와 코드에 숫자로 저장되므로 **한 번 정하면 바꾸지 않는다**. 새 값은 맨 뒤 번호로 추가한다 |
+| description | 설명 |
+
+- 새 이넘은 1부터 시작하고 0은 "없음"으로 비워 둔다
+- 클라이언트에 이미 있는 이넘(`SkillTrigger`, `SkillEffectType`, `VfxAnchor`, `SlimeRenderGroup`)은 에셋·프리팹에 숫자로 저장돼 있을 수 있어 **클라이언트 값(0부터)을 그대로** 쓴다
+
+| 시트.열 | 이넘 |
+|---|---|
+| Stages.mode | GameMode |
+| Stages.difficulty | Difficulty |
+| Skills.trigger | SkillTrigger |
+| Skills.effectType | SkillEffectType |
+| Skills.vfxAnchor | VfxAnchor |
+| Slimes.kind | SlimeKind |
+| Slimes.renderGroup | SlimeRenderGroup |
+| Items.itemType | ItemType |
+| Items.openMode | OpenMode |
+| Items.scope | ItemScope |
 
 ## Grades.csv
 
@@ -161,32 +192,41 @@
 | instantGameOver | 보스만. 1이면 경로 끝 도달 시 즉시 게임오버, 0이면 `lifeCost`만큼 차감. 일반은 비운다. **지금은 모든 보스가 0(라이프 10 차감)**이다 |
 | renderGroup | 렌더링 버킷 `Normal` / `Boss` |
 
-## WaveTables.csv
+## Stages.csv
 
-스테이지(난이도)마다 한 행. 원본은 클라이언트 `WaveTableData` 에셋이다.
+스테이지 = 플레이어가 고르는 게임 하나 (모드 × 난이도). 웨이브는 `Waves/<codeName>.csv`에 있다. 지금은 싱글 보통(11)만 있고, 나머지는 만들 때 ID 규칙대로 추가한다.
 
 | 열 | 설명 |
 |---|---|
-| tableId | 웨이브 테이블 ID (2자리) |
-| codeName | 영문 코드명 (`Easy` → 클라이언트 `WaveEasyTable`) |
-| spawnInterval | 슬라임 간 스폰 간격(초). 전 웨이브 공통 |
-| interWaveDelay | 웨이브 간 대기(초) |
+| stageId | 스테이지 ID (2자리, ID 규칙 참고) |
+| codeName | 영문 코드명. 웨이브 파일 이름이 된다 (`SingleNormal` → `Waves/SingleNormal.csv`) |
+| mode | `GameMode` (`Single` / `Multi`) |
+| difficulty | `Difficulty` (`Normal` / `Hard` / `Hell`) |
+| name | 화면에 보이는 이름 |
+| enabled | 1/0. 0이면 고를 수 없다 |
+| startingLife | 시작 라이프 |
+| startingJelly | 시작 젤리 |
+| spawnInterval | 한 무리 안에서 슬라임이 나오는 간격(초) |
+| interWaveDelay | 웨이브 사이 기본 대기(초) |
 | normalHpGrowth | 웨이브당 HP 증가율(복리, 0.06 = 6%). 일반 슬라임에만 적용 |
 
-## WaveZones.csv
+## Waves/<codeName>.csv
 
-테이블의 구간 목록. 한 구간은 10웨이브이고, 1~9번째는 일반 슬라임, 10번째는 보스 단독이다. 최종 웨이브 = 구간 수 × 10.
+한 스테이지의 웨이브. 파일 하나가 스테이지 하나이고, 파일 이름이 `Stages.codeName`이다. **한 행이 한 웨이브에 나오는 몬스터 한 무리**다.
 
 | 열 | 설명 |
 |---|---|
-| tableId | 소속 웨이브 테이블 |
-| zone | 구간 순번 (1부터, 빠짐없이) |
-| slimeId | 구간 1~9번째 웨이브 슬라임 (`kind` = Normal) |
-| count | 일반 웨이브 마릿수 |
-| bossId | 구간 10번째 웨이브 보스 (`kind` = Boss) |
-| bossExtraStartDelay | 보스 웨이브 시작 전 추가 대기(초) |
+| wave | 웨이브 번호. 1부터 빠짐없이 이어진다. 마지막 번호가 그 스테이지의 최종 웨이브다 (스테이지마다 다를 수 있다) |
+| order | 웨이브 안에서 나오는 순서. 웨이브마다 1부터 빠짐없이 |
+| slimeId | 나오는 슬라임 (`Slimes.csv`) |
+| count | 마릿수 |
+| delay | 이 무리가 나오기 전 추가 대기(초). 비우면 0 |
 
-계산식: 일반 HP = `baseHealth × (1 + normalHpGrowth)^(웨이브 - 1)`, 보스 HP = `baseHealth`.
+- 진행: 웨이브 시작 → 무리를 `order` 순서대로 내보낸다 (무리 앞에 `delay`, 무리 안 슬라임은 `spawnInterval` 간격) → 다 나오면 `interWaveDelay` 후 다음 웨이브. 이전 웨이브 슬라임이 남아 있어도 넘어가고, 마지막 웨이브만 슬라임이 모두 처리돼야 클리어다
+- 보스(`kind=Boss`)가 있는 웨이브가 보스 웨이브다. 따로 표시하지 않는다
+- HP: 일반 = `baseHealth × (1 + normalHpGrowth)^(웨이브 - 1)`, 보스 = `baseHealth`
+- `SingleNormal`은 클라이언트 `WaveEasyTable` 에셋(10웨이브 구간 5개, 구간마다 일반 9웨이브 + 보스 1웨이브)을 옮긴 것이다. 클라이언트는 아직 에셋을 쓴다
+- 이벤트가 생기면 열을 추가하거나 짝 파일(`Waves/<codeName>.Events.csv`)을 둔다
 
 ## Items.csv
 
@@ -219,12 +259,10 @@
 
 ## GameConstants.csv
 
-게임 전역 상수. 행이 하나뿐인 값은 모두 여기에 둔다 (지금은 인게임 전투 규칙만 있다). `key,value` 두 열이다. 값이 늘면 키에 묶음 접두어(`summon.` 등)를 붙인다. 원본은 클라이언트 `GameConfig` 에셋이다 (에셋에 저장되지 않은 값은 코드 기본값을 옮겼다). 디버그용 값(`ignoreJellyCost`, `autoStartWave`, `testTower`, `debugTowerLevel`)은 클라이언트 개발 설정이라 넣지 않는다.
+게임 전역 상수. 행이 하나뿐인 값은 모두 여기에 둔다 (지금은 인게임 전투 규칙만 있다). `key,value` 두 열이다. 값이 늘면 키에 묶음 접두어(`summon.` 등)를 붙인다. 원본은 클라이언트 `GameConfig` 에셋이다 (에셋에 저장되지 않은 값은 코드 기본값을 옮겼다). 스테이지마다 다를 수 있는 값(시작 라이프, 시작 젤리)은 `Stages.csv`에 둔다. 디버그용 값(`ignoreJellyCost`, `autoStartWave`, `testTower`, `debugTowerLevel`)은 클라이언트 개발 설정이라 넣지 않는다.
 
 | key | 설명 |
 |---|---|
-| startingLife | 스테이지 시작 라이프 |
-| startingJelly | 스테이지 시작 젤리 |
 | summonBaseCost | 소환 비용 기본값. 비용 = 기본 + 증가 × 소환 횟수 |
 | summonCostIncrease | 소환 1회당 비용 증가 |
 | summonGradeId | 소환 등급 |
