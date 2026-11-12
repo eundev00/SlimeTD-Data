@@ -24,4 +24,4 @@ Sheets/*.csv (원본)
         └─ 클라: 표시와 예측용. 데이터 버전이 서버와 다르면 업데이트
 ```
 
-현재는 원본 시트만 있다. 웨이브/슬라임/게임 상수(`GameConstants`) 시트는 클라이언트 ScriptableObject 값을 옮겨 만들었고, 클라이언트는 아직 에셋을 원본으로 쓴다. 시트를 고친 뒤에는 `.claude/skills/check-sheets` 스킬로 검사한다 ("시트 검사해"라고 요청하면 AI가 규칙 목록대로 확인한다). 열마다 서버/클라 중 누가 쓰는지는 `Sheets/README.md`의 "열 용도"에 있다.
+현재는 원본 시트만 있다. 웨이브/슬라임/게임 상수(`GameConstants`) 시트는 처음에 클라이언트 ScriptableObject 값을 옮겨 만들었다. 지금은 이 저장소가 원본이고, 클라이언트는 서버 연결 전까지 시트를 임시 ScriptableObject로 옮겨 쓴다 (클라이언트 저장소의 `sheets-to-so` 스킬). 시트를 고친 뒤에는 `.claude/skills/check-sheets` 스킬로 검사한다 ("시트 검사해"라고 요청하면 AI가 규칙 목록대로 확인한다). 열마다 서버/클라 중 누가 쓰는지는 `Sheets/README.md`의 "열 용도"에 있다.
