@@ -221,6 +221,7 @@
 | spawnInterval | 한 무리 안에서 슬라임이 나오는 간격(초) |
 | interWaveDelay | 웨이브 사이 기본 대기(초) |
 | normalHpGrowth | 웨이브당 HP 증가율(복리, 0.06 = 6%). 일반 슬라임에만 적용 |
+| mapKey | 맵 이름. 클라이언트는 같은 이름의 맵 프리팹(`Assets/Prefabs/Game/Map/<mapKey>.prefab`)을 로드한다. 맵의 그리드와 경로는 아직 클라이언트에만 있고, 서버가 쓰게 되면 이 키로 맵 데이터를 찾는다 |
 
 ## Waves/<codeName>.csv
 
