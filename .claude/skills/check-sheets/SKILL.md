@@ -61,22 +61,22 @@ description: SlimeTD-Data의 Sheets/*.csv와 Sheets/Waves/*.csv 기획 데이터
     - `upgradeOf`가 있으면 같은 타워의 스킬이고, 대체 대상의 해금 레벨이 더 낮다. 자기 자신은 안 된다
     - `trigger=EveryNthAttack`이면 `nth`가 1 이상, 아니면 `nth`는 비운다
     - `chance`는 0 초과 100 이하, `cooldown`은 0 이상, `duration`은 0보다 크다
-    - `value` 단위: AttackSpeed/DamageMultiplier/Slow는 퍼센트(%)만, Attack은 둘 다, 나머지(CritChance, CritBonus, MultiShot, Pierce, JellyGain, Splash, Stun)는 고정값만
+    - `value` 단위: AttackSpeed/DamageMultiplier/Slow는 퍼센트(%)만, Attack은 둘 다, 나머지(CritChance, CritBonus, MultiShot, Pierce, GoldGain, Splash, Stun)는 고정값만
     - Slow는 `duration` 필수, 1등급 타워의 Slow는 최대 5%
     - Stun은 `duration` 필수. `value`는 쓰지 않지만 클라이언트 임포터 때문에 비우지 않는다
-25. **LevelUpCosts**: Grades의 모든 등급에 레벨 1~14가 빠짐없이 있다. `cards`, `gold`는 0 이상
-26. **Towers**: attackRange, attackCooldown > 0, critChance 0~100, critBonus/unlockGemPrice ≥ 0. 잠긴 헌터(`startUnlocked`가 1이 아님)인데 `unlockGemPrice`가 0이면 경고 (구매 불가)
+25. **LevelUpCosts**: Grades의 모든 등급에 레벨 1~14가 빠짐없이 있다. `cards`, `coin`은 0 이상
+26. **Towers**: attackRange, attackCooldown > 0, critChance 0~100, critBonus/unlockDiamondPrice ≥ 0. 잠긴 헌터(`startUnlocked`가 1이 아님)인데 `unlockDiamondPrice`가 0이면 경고 (구매 불가)
     - **TowerProjectiles**: `attackType=Projectile`인 타워는 행이 반드시 있고, 다른 타워는 행이 없다. speed, hitRadius, lifetime > 0
 27. **Grades**: baseAttack > 0, attackGrowthRate/gachaWeight ≥ 0
-28. **뽑기**: 팩 cardCount ≥ 1, price ≥ 0. 설정 lockedCardChance 0~100, pityCount ≥ 1, maxLevelRefundGold ≥ 0
-29. **Slimes**: Boss는 `instantGameOver` 필수, Normal은 비운다(경고). `renderGroup`이 `kind`와 다르면 경고. baseHealth, baseSpeed > 0, lifeCost, jellyReward ≥ 0
-30. **Stages**: startingLife ≥ 1, startingJelly ≥ 0, spawnInterval > 0, interWaveDelay ≥ 0, normalHpGrowth ≥ 0. `enabled`가 1인 스테이지가 하나 이상 있다
+28. **뽑기**: 팩 cardCount ≥ 1, price ≥ 0. 설정 lockedCardChance 0~100, pityCount ≥ 1, maxLevelRefundCoin ≥ 0
+29. **Slimes**: Boss는 `instantGameOver` 필수, Normal은 비운다(경고). `renderGroup`이 `kind`와 다르면 경고. baseHealth, baseSpeed > 0, lifeCost, goldReward ≥ 0
+30. **Stages**: startingLife ≥ 1, startingGold ≥ 0, spawnInterval > 0, interWaveDelay ≥ 0, normalHpGrowth ≥ 0. `enabled`가 1인 스테이지가 하나 이상 있다
 31. **웨이브 파일**: `wave`가 1부터 빠짐없이 이어지고, 웨이브마다 `order`가 1부터 빠짐없이 이어진다. count ≥ 1, delay ≥ 0. 마지막 웨이브 번호(최종 웨이브)를 보고에 적는다
 32. **Items**
     - Currency: targetId, openMode 비움
     - HunterCardPack: targetId 필수, openMode=OnAcquire
     - openMode=OnAcquire면 scope 비움, openMode가 비면 scope(Account/Battle) 필수
-33. **NewAccount**: amount ≥ 1, scope=Battle 아이템(젤리 등)은 지급할 수 없다
+33. **NewAccount**: amount ≥ 1, scope=Battle 아이템(골드, 젤리)은 지급할 수 없다
 34. **GameConstants**: README의 키가 모두 있다. summonBaseCost/summonCostIncrease ≥ 0, slowMinSpeedRatio·bossSlowScale 0~1
 
 ### F. 문서

@@ -88,7 +88,7 @@
 | gradeId | 등급 ID |
 | level | 올리기 전 레벨. 등급마다 1부터 14까지 빠짐없이 있어야 한다 (1이면 1 -> 2) |
 | cards | 필요한 그 헌터의 카드 수 |
-| gold | 필요 골드 |
+| coin | 필요 코인 |
 
 ## Towers.csv
 
@@ -105,7 +105,7 @@
 | critChance | 치명타 확률(%) |
 | critBonus | 치명타 보너스(%) |
 | startUnlocked | 시작 해금 (1/0). 타워마다 지정한다. 비우면 잠금. **기본 정책: 일반·희귀·영웅 헌터는 모두 1(레벨 1로 보유한 채 시작)** |
-| unlockGemPrice | 해금 보석 가격 (0 = 구매 불가) |
+| unlockDiamondPrice | 해금 다이아 가격 (0 = 구매 불가) |
 | inGacha | 뽑기 대상 (1/0). 비우면 1. 잠긴 헌터는 잠긴 카드로만 나오고, 해금되면 등급 풀에 들어간다 |
 
 ## TowerProjectiles.csv
@@ -128,7 +128,7 @@
 |---|---|
 | packId | 팩 ID (1001~) |
 | cardCount | 카드 장수 |
-| price | 골드 가격 |
+| price | 코인 가격 |
 | guaranteeGradeId | 이 등급 이상 1장 보장 (0 = 보장 없음). 팩 안에 없으면 마지막 장을 이 등급 이상에서 다시 뽑는다 |
 
 ## HunterCardGachaSettings.csv
@@ -140,7 +140,7 @@
 | lockedCardChance | 잠긴 카드 확률(%). 잠긴 헌터가 없으면 판정하지 않는다 |
 | pityCount | 이 장수 동안 천장 등급이 안 나오면 다음 장은 천장 등급 |
 | pityGradeId | 천장 등급 ID |
-| maxLevelRefundGold | 최대 레벨 헌터의 카드가 나오면 대신 주는 골드 |
+| maxLevelRefundCoin | 최대 레벨 헌터의 카드가 나오면 대신 주는 코인 |
 
 ## Skills.csv
 
@@ -181,10 +181,10 @@
 | Pierce | 고정만 | **추가로** 관통하는 대상 수 (1이면 총 2마리). 맞은 모든 대상에게 같은 데미지 |
 | Slow | 퍼센트만 | 맞은 적의 이동속도 N% 감소. `duration`(초) 필수. 1등급 타워는 최대 5%. 중첩 규칙은 Doc/슬라임TD_타워스킬설계.md 5장 |
 | Splash | 고정만 | 맞은 대상 중심 반경 N 안의 다른 슬라임에게 **같은 데미지**를 준다 (중심 대상 제외, 화살은 첫 타격 때 한 번만) |
-| JellyGain | 고정만 | 젤리 +N. 공격 1회마다 확률 판정 후 바로 얻는다 (OnAttack) |
+| GoldGain | 고정만 | 골드 +N (인게임). 공격 1회마다 확률 판정 후 바로 얻는다 (OnAttack) |
 | Stun | 고정만 | 맞은 적을 `duration`(초) 동안 기절시킨다. **value는 쓰지 않는다.** 비우지 않고 1을 넣어 둔다 |
 
-**스킬이 발동한 공격은 치명타 판정을 하지 않는다.** 데미지에 영향을 주는 OnAttack 스킬(MultiShot, DamageMultiplier, Splash)이 터지면 그 공격의 화살 전부가 치명타 없이 같은 데미지가 된다. Always 패시브와 JellyGain은 해당하지 않는다. chance와 cooldown은 함께 쓸 수 있고, 쿨타임은 공격속도와 무관하게 발동했을 때부터 흐른다.
+**스킬이 발동한 공격은 치명타 판정을 하지 않는다.** 데미지에 영향을 주는 OnAttack 스킬(MultiShot, DamageMultiplier, Splash)이 터지면 그 공격의 화살 전부가 치명타 없이 같은 데미지가 된다. Always 패시브와 GoldGain은 해당하지 않는다. chance와 cooldown은 함께 쓸 수 있고, 쿨타임은 공격속도와 무관하게 발동했을 때부터 흐른다.
 
 허용되지 않는 단위를 쓰거나 해석할 수 없는 값이 있는 행은 클라이언트에 반영하지 않고 보고한다.
 
@@ -200,7 +200,7 @@
 | baseHealth | 일반: 웨이브 성장률 적용 전 기본 HP / 보스: 이 값 그대로 |
 | baseSpeed | 이동 속도 |
 | lifeCost | 경로 끝 도달 시 차감 라이프 |
-| jellyReward | 처치 젤리 |
+| goldReward | 처치 골드 (인게임) |
 | instantGameOver | 보스만. 1이면 경로 끝 도달 시 즉시 게임오버, 0이면 `lifeCost`만큼 차감. 일반은 비운다. **지금은 모든 보스가 0(라이프 10 차감)**이다 |
 | renderGroup | 렌더링 버킷 `Normal` / `Boss` |
 
@@ -217,7 +217,7 @@
 | name | 화면에 보이는 이름 |
 | enabled | 1/0. 0이면 고를 수 없다 |
 | startingLife | 시작 라이프 |
-| startingJelly | 시작 젤리 |
+| startingGold | 시작 골드 (인게임) |
 | spawnInterval | 한 무리 안에서 슬라임이 나오는 간격(초) |
 | interWaveDelay | 웨이브 사이 기본 대기(초) |
 | normalHpGrowth | 웨이브당 HP 증가율(복리, 0.06 = 6%). 일반 슬라임에만 적용 |
@@ -248,7 +248,7 @@
 | 열 | 설명 |
 |---|---|
 | itemId | 아이템 ID (7자리, 대역은 ID 규칙 참고) |
-| codeName | 영문 코드명. 클라이언트 아이콘·표시 연결 키. 재화는 클라이언트 `CurrencyType`(`Gold`, `Gem`)과 같은 이름이다 |
+| codeName | 영문 코드명. 클라이언트 아이콘·표시 연결 키. 재화는 클라이언트 `CurrencyType`과 같은 이름이다. 메타 재화는 `Coin`(일반: 헌터 레벨업, 뽑기 팩), `Diamond`(헌터 구매), 인게임 재화는 `Gold`(소환), `Jelly`(강화, 지급처는 추후 작업)다 |
 | name | 화면에 보이는 이름 |
 | itemType | `Currency`(재화) / `HunterCardPack`(헌터 카드 팩). 예정: `HunterCard`(특정 헌터 카드) |
 | targetId | 연결 대상. `HunterCardPack`은 `HunterCardGachaPacks.csv`의 팩 ID |
@@ -256,7 +256,7 @@
 | scope | 보관 위치. `Account`: 계정에 저장 / `Battle`: 스테이지 안에서만 쓰고 사라짐. `OnAcquire` 아이템은 보관되지 않으므로 비운다 |
 
 - **헌터 카드 팩 판정**: 팩의 장수와 보장 등급(`HunterCardGachaPacks.csv`)과 뽑기 설정(`HunterCardGachaSettings.csv`)으로 판정한다
-- **천장**: 상점에서 골드로 산 팩만 천장 카운트에 포함한다. 우편·선물·보상으로 받은 팩은 천장과 무관하게 판정한다
+- **천장**: 상점에서 코인으로 산 팩만 천장 카운트에 포함한다. 우편·선물·보상으로 받은 팩은 천장과 무관하게 판정한다
 - **특정 헌터 카드**(`HunterCard`, 예: 궁수 카드)는 예정이다. 추가할 때 ID는 2000000+타워ID, `targetId`는 타워 ID로 한다
 
 ## NewAccount.csv
@@ -268,11 +268,11 @@
 | itemId | `Items.csv`의 아이템 ID. `scope`가 `Account`인 아이템만 쓸 수 있다 |
 | amount | 지급 수량 |
 
-개발용 임시 값이다 (골드 10000, 보석 10000). **헌터 카드(레벨업 재료)는 0장으로 시작한다.** 헌터 보유 여부는 이 시트가 아니라 `Towers.csv`의 `startUnlocked`가 정한다. 클라이언트 `GameConfig`의 헌터별 시작 카드 100장은 레벨업 테스트용 임시 값이라 이 시트에 넣지 않는다.
+개발용 임시 값이다 (코인 10000, 다이아 10000). **헌터 카드(레벨업 재료)는 0장으로 시작한다.** 헌터 보유 여부는 이 시트가 아니라 `Towers.csv`의 `startUnlocked`가 정한다. 클라이언트 `GameConfig`의 헌터별 시작 카드 100장은 레벨업 테스트용 임시 값이라 이 시트에 넣지 않는다.
 
 ## GameConstants.csv
 
-게임 전역 상수. 행이 하나뿐인 값은 모두 여기에 둔다 (지금은 인게임 전투 규칙만 있다). `key,value` 두 열이다. 값이 늘면 키에 묶음 접두어(`summon.` 등)를 붙인다. 처음 값은 클라이언트 `GameConfig` 에셋에서 옮겼다 (에셋에 저장되지 않은 값은 코드 기본값을 옮겼다). 스테이지마다 다를 수 있는 값(시작 라이프, 시작 젤리)은 `Stages.csv`에 둔다. 디버그용 값(`ignoreJellyCost`, `autoStartWave`, `testTower`, `debugTowerLevel`)은 클라이언트 개발 설정이라 넣지 않는다.
+게임 전역 상수. 행이 하나뿐인 값은 모두 여기에 둔다 (지금은 인게임 전투 규칙만 있다). `key,value` 두 열이다. 값이 늘면 키에 묶음 접두어(`summon.` 등)를 붙인다. 처음 값은 클라이언트 `GameConfig` 에셋에서 옮겼다 (에셋에 저장되지 않은 값은 코드 기본값을 옮겼다). 스테이지마다 다를 수 있는 값(시작 라이프, 시작 골드)은 `Stages.csv`에 둔다. 디버그용 값(`ignoreGoldCost`, `autoStartWave`, `testTower`, `debugTowerLevel`)은 클라이언트 개발 설정이라 넣지 않는다.
 
 | key | 설명 |
 |---|---|

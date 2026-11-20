@@ -1,4 +1,4 @@
-﻿slimeId,codeName,kind,baseHealth,baseSpeed,lifeCost,jellyReward,instantGameOver,renderGroup
+﻿slimeId,codeName,kind,baseHealth,baseSpeed,lifeCost,goldReward,instantGameOver,renderGroup
 100001,Slime_01,Normal,50,1,1,1,,Normal
 100002,Slime_02,Normal,120,1,1,1,,Normal
 100003,Slime_03,Normal,140,1,1,1,,Normal

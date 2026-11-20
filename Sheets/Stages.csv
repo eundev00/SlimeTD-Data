@@ -1,3 +1,3 @@
-﻿stageId,codeName,mode,difficulty,name,enabled,startingLife,startingJelly,spawnInterval,interWaveDelay,normalHpGrowth,mapKey
+﻿stageId,codeName,mode,difficulty,name,enabled,startingLife,startingGold,spawnInterval,interWaveDelay,normalHpGrowth,mapKey
 11,SingleNormal,Single,Normal,싱글 보통,1,10,50,0.8,2,0.06,Map_Forest01
 21,MultiNormal,Multi,Normal,멀티 보통,1,10,50,0.8,2,0.06,Map_Coop01

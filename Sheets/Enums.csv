@@ -25,7 +25,7 @@ SkillEffectType,Attack,3,공격력
 SkillEffectType,MultiShot,4,추가 발사
 SkillEffectType,Pierce,5,관통
 SkillEffectType,Slow,6,감속
-SkillEffectType,JellyGain,7,젤리 획득
+SkillEffectType,GoldGain,7,골드 획득
 SkillEffectType,DamageMultiplier,8,피해 배율
 SkillEffectType,Splash,9,광역
 SkillEffectType,Stun,10,기절
