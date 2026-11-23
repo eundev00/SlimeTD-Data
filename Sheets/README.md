@@ -223,6 +223,18 @@
 | normalHpGrowth | 웨이브당 HP 증가율(복리, 0.06 = 6%). 일반 슬라임에만 적용 |
 | mapKey | 맵 이름. 클라이언트는 같은 이름의 맵 프리팹(`Assets/Prefabs/Game/Map/<mapKey>.prefab`)을 로드한다. 맵의 그리드와 경로는 아직 클라이언트에만 있고, 서버가 쓰게 되면 이 키로 맵 데이터를 찾는다 |
 
+## StageRewards.csv
+
+스테이지를 한 판 끝낼 때 계정에 주는 보상. 서버가 전투 결과를 확인(검증 일치)했을 때만 준다. 승패·도달 웨이브와 상관없이 고정이다 (다른 메타 재화가 정해지면 밸런스를 다시 정한다). 한 스테이지에 여러 줄을 둘 수 있다. 줄이 없는 스테이지는 보상이 없다
+
+| 열 | 설명 |
+|---|---|
+| stageId | `Stages.csv` stageId |
+| itemId | `Items.csv` itemId. 계정 재화(`scope=Account`, `itemType=Currency`)만 |
+| amount | 지급 수량 (1 이상) |
+
+지금 값: 싱글 보통(11) 코인 1000, 다이아 1
+
 ## Waves/<codeName>.csv
 
 한 스테이지의 웨이브. 파일 하나가 스테이지 하나이고, 파일 이름이 `Stages.codeName`이다. **한 행이 한 웨이브에 나오는 몬스터 한 무리**다.
