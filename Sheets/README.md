@@ -77,7 +77,7 @@
 | name | 등급 이름. 헌터 상세 팝업의 등급 배지와 태그에 표시된다 |
 | baseAttack | 기준 공격력 |
 | attackGrowthRate | 레벨당 공격력 증가율(%) |
-| gachaWeight | 뽑기 등급 가중치. 보유 헌터가 없는 등급은 빼고 남은 가중치끼리 비율을 다시 계산한다 |
+| gachaWeight | 뽑기 등급 가중치. 보유 헌터가 없는 등급은 빼고 남은 가중치끼리 비율을 다시 계산한다. 0이면 뽑기에서 나오지 않는다 (전설은 0: 다이아 구매·이벤트로만 얻는다) |
 
 ## LevelUpCosts.csv
 
@@ -87,8 +87,10 @@
 |---|---|
 | gradeId | 등급 ID |
 | level | 올리기 전 레벨. 등급마다 1부터 14까지 빠짐없이 있어야 한다 (1이면 1 -> 2) |
-| cards | 필요한 그 헌터의 카드 수 |
+| cards | 필요한 그 헌터의 카드 수. 0이면 카드 없이 코인만 쓴다 (전설은 뽑기에서 나오지 않으므로 0) |
 | coin | 필요 코인 |
+
+값은 클라이언트 저장소 `Doc/슬라임TD_메타재화밸런스.md` 6장(2026-11-24 확정)을 옮긴 것이다. 레벨 15가 최대이고, 최대 레벨 헌터 카드는 뽑기에서 코인으로 환급한다 (`HunterCardGachaSettings.maxLevelRefundCoin`).
 
 ## Towers.csv
 
@@ -104,9 +106,9 @@
 | attackCooldown | 공격 쿨다운(초) |
 | critChance | 치명타 확률(%) |
 | critBonus | 치명타 보너스(%) |
-| startUnlocked | 시작 해금 (1/0). 타워마다 지정한다. 비우면 잠금. **기본 정책: 일반·희귀·영웅 헌터는 모두 1(레벨 1로 보유한 채 시작)** |
-| unlockDiamondPrice | 해금 다이아 가격 (0 = 구매 불가) |
-| inGacha | 뽑기 대상 (1/0). 비우면 1. 잠긴 헌터는 잠긴 카드로만 나오고, 해금되면 등급 풀에 들어간다 |
+| startUnlocked | 시작 해금 (1/0). 타워마다 지정한다. 비우면 잠금. **기본 정책: 일반·희귀·영웅 헌터는 모두 1(레벨 1로 보유한 채 시작). 전설은 0 (다이아 구매 또는 이벤트 지급)** |
+| unlockDiamondPrice | 해금 다이아 가격 (0 = 구매 불가). 전설 가격은 미정 |
+| inGacha | 뽑기 대상 (1/0). 비우면 1. 뽑기에서는 해금(보유)한 헌터 카드만 나온다 (잠긴 헌터는 나오지 않는다) |
 
 ## TowerProjectiles.csv
 
@@ -128,8 +130,10 @@
 |---|---|
 | packId | 팩 ID (1001~) |
 | cardCount | 카드 장수 |
-| price | 코인 가격 |
-| guaranteeGradeId | 이 등급 이상 1장 보장 (0 = 보장 없음). 팩 안에 없으면 마지막 장을 이 등급 이상에서 다시 뽑는다 |
+| price | 팩 티켓(`PackTicket`) 가격. 카드 1장 = 티켓 10 (1장 팩 10, 10장 팩 100) |
+| guaranteeGradeId | 이 등급 이상 1장 보장 (0 = 보장 없음). 팩 안에 없으면 마지막 장을 이 등급 이상에서 다시 뽑는다 (그 등급 보유 헌터가 없으면 그대로) |
+
+뽑기 규칙 (2026-11-24): 장마다 등급을 `Grades.gachaWeight`로 정하고, 그 등급의 보유(해금) 헌터 중 하나가 나온다. **천장과 잠긴 카드 규칙은 없다.**
 
 ## HunterCardGachaSettings.csv
 
@@ -137,10 +141,7 @@
 
 | key | 설명 |
 |---|---|
-| lockedCardChance | 잠긴 카드 확률(%). 잠긴 헌터가 없으면 판정하지 않는다 |
-| pityCount | 이 장수 동안 천장 등급이 안 나오면 다음 장은 천장 등급 |
-| pityGradeId | 천장 등급 ID |
-| maxLevelRefundCoin | 최대 레벨 헌터의 카드가 나오면 대신 주는 코인 |
+| maxLevelRefundCoin | 최대 레벨 헌터의 카드가 나오면 대신 주는 코인 (장당) |
 
 ## Skills.csv
 
@@ -225,15 +226,21 @@
 
 ## StageRewards.csv
 
-스테이지를 한 판 끝낼 때 계정에 주는 보상. 서버가 전투 결과를 확인(검증 일치)했을 때만 준다. 승패·도달 웨이브와 상관없이 고정이다 (다른 메타 재화가 정해지면 밸런스를 다시 정한다). 한 스테이지에 여러 줄을 둘 수 있다. 줄이 없는 스테이지는 보상이 없다
+스테이지를 한 판 끝낼 때 계정에 주는 보상. 서버가 전투 결과를 확인(검증 일치)했을 때만 준다. 한 스테이지에 여러 줄을 둘 수 있다. 줄이 없는 스테이지는 보상이 없다
 
 | 열 | 설명 |
 |---|---|
 | stageId | `Stages.csv` stageId |
+| rewardType | `Clear`: 클리어 보상 (실패하면 줄여서 준다) / `FirstClear`: 그 스테이지를 처음 클리어할 때 한 번 |
 | itemId | `Items.csv` itemId. 계정 재화(`scope=Account`, `itemType=Currency`)만 |
 | amount | 지급 수량 (1 이상) |
 
-지금 값: 싱글 보통(11) 코인 1000, 다이아 1
+- 클리어(마지막 웨이브까지 다 막음): `Clear` 보상 전부. 처음이면 `FirstClear` 보상도
+- 실패: `Clear` 보상 × (통과 구간 ÷ 전체 구간) × `GameConstants.reward.failRate`, 버림. 통과 구간 = 도달 웨이브 ÷ `reward.segmentWaves`, 전체 구간 = 최종 웨이브 ÷ `reward.segmentWaves` (둘 다 버림). 첫 구간을 못 넘기면 보상이 없다
+- 예) 싱글 보통(50웨이브, 10웨이브 구간) 30웨이브 실패 → 3/5 × 0.5 = 0.3 → 팩 티켓 117, 코인 210, 경험치 30
+- 경험치는 받는 즉시 유저 레벨업에 쓰인다 (`GameConstants.userLevel.*`)
+
+지금 값 (2026-11-24, `Doc/슬라임TD_메타재화밸런스.md` 5장): 싱글 보통(11) 클리어 = 팩 티켓 390, 코인 700, 경험치 100 / 최초 클리어 = 다이아 10
 
 ## Waves/<codeName>.csv
 
@@ -260,7 +267,7 @@
 | 열 | 설명 |
 |---|---|
 | itemId | 아이템 ID (7자리, 대역은 ID 규칙 참고) |
-| codeName | 영문 코드명. 클라이언트 아이콘·표시 연결 키. 재화는 클라이언트 `CurrencyType`과 같은 이름이다. 메타 재화는 `Coin`(일반: 헌터 레벨업, 뽑기 팩), `Diamond`(헌터 구매), 인게임 재화는 `Gold`(소환), `Jelly`(강화, 지급처는 추후 작업)다 |
+| codeName | 영문 코드명. 클라이언트 아이콘·표시 연결 키. 재화는 클라이언트 `CurrencyType`과 같은 이름이다. 메타 재화는 `Coin`(헌터 레벨업, 상점), `Diamond`(전설 헌터 구매, 충전 등), `PackTicket`(헌터 카드 팩), `Exp`(유저 레벨, 계정에는 지금 레벨 안에서 쌓인 양), `Energy`(스테이지 입장, 시간 회복), 인게임 재화는 `Gold`(소환), `Jelly`(강화, 지급처는 추후 작업)다. 서버는 재화를 이 codeName으로 찾는다 |
 | name | 화면에 보이는 이름 |
 | itemType | `Currency`(재화) / `HunterCardPack`(헌터 카드 팩). 예정: `HunterCard`(특정 헌터 카드) |
 | targetId | 연결 대상. `HunterCardPack`은 `HunterCardGachaPacks.csv`의 팩 ID |
@@ -268,7 +275,6 @@
 | scope | 보관 위치. `Account`: 계정에 저장 / `Battle`: 스테이지 안에서만 쓰고 사라짐. `OnAcquire` 아이템은 보관되지 않으므로 비운다 |
 
 - **헌터 카드 팩 판정**: 팩의 장수와 보장 등급(`HunterCardGachaPacks.csv`)과 뽑기 설정(`HunterCardGachaSettings.csv`)으로 판정한다
-- **천장**: 상점에서 코인으로 산 팩만 천장 카운트에 포함한다. 우편·선물·보상으로 받은 팩은 천장과 무관하게 판정한다
 - **특정 헌터 카드**(`HunterCard`, 예: 궁수 카드)는 예정이다. 추가할 때 ID는 2000000+타워ID, `targetId`는 타워 ID로 한다
 
 ## NewAccount.csv
@@ -280,11 +286,11 @@
 | itemId | `Items.csv`의 아이템 ID. `scope`가 `Account`인 아이템만 쓸 수 있다 |
 | amount | 지급 수량 |
 
-개발용 임시 값이다 (코인 10000, 다이아 10000). **헌터 카드(레벨업 재료)는 0장으로 시작한다.** 헌터 보유 여부는 이 시트가 아니라 `Towers.csv`의 `startUnlocked`가 정한다. 클라이언트 `GameConfig`의 헌터별 시작 카드 100장은 레벨업 테스트용 임시 값이라 이 시트에 넣지 않는다.
+코인·다이아 10000은 개발용 임시 값이다. 에너지는 최대치(30)로 시작하고, 팩 티켓·경험치는 0으로 시작한다. **헌터 카드(레벨업 재료)는 0장으로 시작한다.** 헌터 보유 여부는 이 시트가 아니라 `Towers.csv`의 `startUnlocked`가 정한다. 클라이언트 `GameConfig`의 헌터별 시작 카드 100장은 레벨업 테스트용 임시 값이라 이 시트에 넣지 않는다.
 
 ## GameConstants.csv
 
-게임 전역 상수. 행이 하나뿐인 값은 모두 여기에 둔다 (지금은 인게임 전투 규칙만 있다). `key,value` 두 열이다. 값이 늘면 키에 묶음 접두어(`summon.` 등)를 붙인다. 처음 값은 클라이언트 `GameConfig` 에셋에서 옮겼다 (에셋에 저장되지 않은 값은 코드 기본값을 옮겼다). 스테이지마다 다를 수 있는 값(시작 라이프, 시작 골드)은 `Stages.csv`에 둔다. 디버그용 값(`ignoreGoldCost`, `autoStartWave`, `testTower`, `debugTowerLevel`)은 클라이언트 개발 설정이라 넣지 않는다.
+게임 전역 상수. 행이 하나뿐인 값은 모두 여기에 둔다 (인게임 전투 규칙과 계정 성장 규칙). `key,value` 두 열이다. 값이 늘면 키에 묶음 접두어(`summon.` 등)를 붙인다. 처음 값은 클라이언트 `GameConfig` 에셋에서 옮겼다 (에셋에 저장되지 않은 값은 코드 기본값을 옮겼다). 스테이지마다 다를 수 있는 값(시작 라이프, 시작 골드)은 `Stages.csv`에 둔다. 디버그용 값(`ignoreGoldCost`, `autoStartWave`, `testTower`, `debugTowerLevel`)은 클라이언트 개발 설정이라 넣지 않는다.
 
 | key | 설명 |
 |---|---|
@@ -293,3 +299,12 @@
 | summonGradeId | 소환 등급 |
 | slowMinSpeedRatio | 감속 하한. 기본 속도의 이 비율 밑으로 내려가지 않는다 |
 | bossSlowScale | 보스에게 걸리는 감속 비율 |
+| energy.max | 에너지 시간 회복 최대치. 보상·이벤트로는 넘겨 가질 수 있다 |
+| energy.costPerBattle | 스테이지 1판 에너지 (싱글 시작 요청 때 쓴다. 모자라면 시작할 수 없다) |
+| energy.recoverMinutes | 에너지 1 회복에 걸리는 분 (최대치까지) |
+| userLevel.expBase | 유저 레벨업 필요 경험치 = expBase + expPerLevel × 지금 레벨 |
+| userLevel.expPerLevel | 〃 |
+| reward.segmentWaves | 결과 보상 구간 크기(웨이브). 통과 구간 = 도달 웨이브 ÷ 이 값 (버림) |
+| reward.failRate | 실패 보상 비율. 실패 보상 = 클리어 보상 × (통과 구간 ÷ 전체 구간) × 이 값 (버림) |
+
+계정 성장 값은 클라이언트 저장소 `Doc/슬라임TD_메타재화밸런스.md`(2026-11-24 확정)를 옮긴 것이다. 레벨업 보상은 없다.

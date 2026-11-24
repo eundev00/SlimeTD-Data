@@ -4,3 +4,10 @@ summonCostIncrease,2
 summonGradeId,1
 slowMinSpeedRatio,0.25
 bossSlowScale,0.5
+energy.max,30
+energy.costPerBattle,5
+energy.recoverMinutes,10
+userLevel.expBase,200
+userLevel.expPerLevel,100
+reward.failRate,0.5
+reward.segmentWaves,10

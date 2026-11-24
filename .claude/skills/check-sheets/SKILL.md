@@ -18,7 +18,7 @@ description: SlimeTD-Data의 Sheets/*.csv와 Sheets/Waves/*.csv 기획 데이터
 
 ## 시트 목록
 
-- 표 형식: Enums, Grades, LevelUpCosts, Towers, TowerProjectiles, Skills, HunterCardGachaPacks, Slimes, Stages, Items, NewAccount
+- 표 형식: Enums, Grades, LevelUpCosts, Towers, TowerProjectiles, Skills, HunterCardGachaPacks, Slimes, Stages, StageRewards, Items, NewAccount
 - `key,value` 형식: HunterCardGachaSettings, GameConstants
 - 스테이지 웨이브: `Waves/<Stages.codeName>.csv` (스테이지마다 하나)
 
@@ -47,12 +47,12 @@ description: SlimeTD-Data의 Sheets/*.csv와 Sheets/Waves/*.csv 기획 데이터
 16. `codeName`이 시트 안에서 중복되지 않는다 (Towers, Slimes, Stages, Items)
 
 ### D. 참조
-17. `Towers.gradeId`, `LevelUpCosts.gradeId`, `HunterCardGachaSettings.pityGradeId`, `GameConstants.summonGradeId` → Grades
+17. `Towers.gradeId`, `LevelUpCosts.gradeId`, `GameConstants.summonGradeId` → Grades
 18. `HunterCardGachaPacks.guaranteeGradeId` → Grades (0은 보장 없음)
 19. `Skills.towerId`, `TowerProjectiles.towerId` → Towers, `Skills.upgradeOf` → Skills
 20. 웨이브 파일의 `slimeId` → Slimes
 21. `Items.targetId` → HunterCardPack이면 HunterCardGachaPacks.packId
-22. `NewAccount.itemId` → Items
+22. `NewAccount.itemId`, `StageRewards.itemId` → Items, `StageRewards.stageId` → Stages
 23. `Stages`의 행마다 `Waves/<codeName>.csv`가 있고, `Waves/` 안의 파일마다 `Stages`에 같은 codeName의 행이 있다
 
 ### E. 게임 규칙
@@ -64,11 +64,11 @@ description: SlimeTD-Data의 Sheets/*.csv와 Sheets/Waves/*.csv 기획 데이터
     - `value` 단위: AttackSpeed/DamageMultiplier/Slow는 퍼센트(%)만, Attack은 둘 다, 나머지(CritChance, CritBonus, MultiShot, Pierce, GoldGain, Splash, Stun)는 고정값만
     - Slow는 `duration` 필수, 1등급 타워의 Slow는 최대 5%
     - Stun은 `duration` 필수. `value`는 쓰지 않지만 클라이언트 임포터 때문에 비우지 않는다
-25. **LevelUpCosts**: Grades의 모든 등급에 레벨 1~14가 빠짐없이 있다. `cards`, `coin`은 0 이상
-26. **Towers**: attackRange, attackCooldown > 0, critChance 0~100, critBonus/unlockDiamondPrice ≥ 0. 잠긴 헌터(`startUnlocked`가 1이 아님)인데 `unlockDiamondPrice`가 0이면 경고 (구매 불가)
+25. **LevelUpCosts**: Grades의 모든 등급에 레벨 1~14가 빠짐없이 있다. `cards`, `coin`은 0 이상. `Grades.gachaWeight`가 0인 등급(뽑기에서 안 나옴)은 `cards`가 모두 0이어야 한다 (아니면 카드를 얻을 길이 없어 오류). 같은 등급 안에서 레벨이 오를수록 cards·coin이 줄어들면 경고
+26. **Towers**: attackRange, attackCooldown > 0, critChance 0~100, critBonus/unlockDiamondPrice ≥ 0. 일반·희귀·영웅(`gachaWeight` > 0인 등급) 헌터의 `startUnlocked`가 1이 아니면 경고 (정책: 시작부터 보유). 잠긴 헌터인데 `unlockDiamondPrice`가 0이면 경고 (구매 불가, 전설 가격 미정이면 이벤트 지급만 가능)
     - **TowerProjectiles**: `attackType=Projectile`인 타워는 행이 반드시 있고, 다른 타워는 행이 없다. speed, hitRadius, lifetime > 0
 27. **Grades**: baseAttack > 0, attackGrowthRate/gachaWeight ≥ 0
-28. **뽑기**: 팩 cardCount ≥ 1, price ≥ 0. 설정 lockedCardChance 0~100, pityCount ≥ 1, maxLevelRefundCoin ≥ 0
+28. **뽑기**: 팩 cardCount ≥ 1, price ≥ 0 (팩 티켓). 설정은 `maxLevelRefundCoin` ≥ 0 하나뿐이다. 천장·잠긴 카드 키(`lockedCardChance`, `pityCount`, `pityGradeId`)가 남아 있으면 경고 (2026-11-24 삭제됨)
 29. **Slimes**: Boss는 `instantGameOver` 필수, Normal은 비운다(경고). `renderGroup`이 `kind`와 다르면 경고. baseHealth, baseSpeed > 0, lifeCost, goldReward ≥ 0
 30. **Stages**: startingLife ≥ 1, startingGold ≥ 0, spawnInterval > 0, interWaveDelay ≥ 0, normalHpGrowth ≥ 0. `enabled`가 1인 스테이지가 하나 이상 있다
 31. **웨이브 파일**: `wave`가 1부터 빠짐없이 이어지고, 웨이브마다 `order`가 1부터 빠짐없이 이어진다. count ≥ 1, delay ≥ 0. 마지막 웨이브 번호(최종 웨이브)를 보고에 적는다
@@ -77,7 +77,9 @@ description: SlimeTD-Data의 Sheets/*.csv와 Sheets/Waves/*.csv 기획 데이터
     - HunterCardPack: targetId 필수, openMode=OnAcquire
     - openMode=OnAcquire면 scope 비움, openMode가 비면 scope(Account/Battle) 필수
 33. **NewAccount**: amount ≥ 1, scope=Battle 아이템(골드, 젤리)은 지급할 수 없다
-34. **GameConstants**: README의 키가 모두 있다. summonBaseCost/summonCostIncrease ≥ 0, slowMinSpeedRatio·bossSlowScale 0~1
+    - **Items 재화**: 서버가 codeName으로 찾는 계정 재화 `Coin`, `Diamond`, `Exp`, `PackTicket`, `Energy`가 모두 있다 (없으면 서버가 시작하지 않으므로 오류)
+34. **GameConstants**: README의 키가 모두 있다. summonBaseCost/summonCostIncrease ≥ 0, slowMinSpeedRatio·bossSlowScale 0~1. energy.max ≥ 1, energy.costPerBattle ≥ 0 (최대치보다 크면 오류: 시간 회복만으로는 시작할 수 없음), energy.recoverMinutes > 0, userLevel.expBase ≥ 1, userLevel.expPerLevel ≥ 0, reward.segmentWaves ≥ 1, reward.failRate 0~1
+    - **StageRewards**: rewardType은 `Clear`/`FirstClear`, itemId는 계정 재화(scope=Account, itemType=Currency), amount ≥ 1, (stageId, rewardType, itemId)가 중복되지 않는다. `enabled`인 스테이지에 `Clear` 줄이 없으면 경고. 각 스테이지의 최종 웨이브가 `reward.segmentWaves`로 나누어떨어지지 않으면 경고 (마지막 구간이 짧아진다)
 
 ### F. 문서
 35. 새로 생긴 시트, 열, 키, 이넘 값이 `Sheets/README.md`에 설명돼 있다. 없으면 보고한다
