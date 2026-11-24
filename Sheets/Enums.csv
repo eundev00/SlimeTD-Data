@@ -5,7 +5,6 @@ Difficulty,Normal,1,보통
 Difficulty,Hard,2,어려움
 Difficulty,Hell,3,지옥
 ItemType,Currency,1,재화
-ItemType,HunterCardPack,2,헌터 카드 팩
 ItemScope,Account,1,계정에 저장
 ItemScope,Battle,2,스테이지 안에서만 쓰고 사라짐
 OpenMode,OnAcquire,1,인벤토리에 들어오는 순간 판정

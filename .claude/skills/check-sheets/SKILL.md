@@ -43,7 +43,7 @@ description: SlimeTD-Data의 Sheets/*.csv와 Sheets/Waves/*.csv 기획 데이터
 12. 모든 시트의 ID를 통틀어 같은 값이 없다 (이넘 value는 ID가 아니므로 제외)
 13. 스킬 ID = 타워ID×100+순번 (`skillId / 100 == towerId`)
 14. 스테이지 ID = `GameMode` 값 × 10 + `Difficulty` 값 (싱글 보통 = 11)
-15. 아이템 ID: 재화 1000001~1999999, 헌터 카드 팩 = 2100000+팩ID, 특정 헌터 카드(예정) = 2000000+타워ID
+15. 아이템 ID: 재화 1000001~1999999, 특정 헌터 카드(예정) = 2000000+타워ID. 2100000~ 대역(없앤 헌터 카드 팩 아이템)을 쓰면 오류
 16. `codeName`이 시트 안에서 중복되지 않는다 (Towers, Slimes, Stages, Items)
 
 ### D. 참조
@@ -51,7 +51,7 @@ description: SlimeTD-Data의 Sheets/*.csv와 Sheets/Waves/*.csv 기획 데이터
 18. `HunterCardGachaPacks.guaranteeGradeId` → Grades (0은 보장 없음)
 19. `Skills.towerId`, `TowerProjectiles.towerId` → Towers, `Skills.upgradeOf` → Skills
 20. 웨이브 파일의 `slimeId` → Slimes
-21. `Items.targetId` → HunterCardPack이면 HunterCardGachaPacks.packId
+21. `Items.targetId` → `HunterCard`(예정)면 Towers.towerId. 다른 타입은 비운다
 22. `NewAccount.itemId`, `StageRewards.itemId` → Items, `StageRewards.stageId` → Stages
 23. `Stages`의 행마다 `Waves/<codeName>.csv`가 있고, `Waves/` 안의 파일마다 `Stages`에 같은 codeName의 행이 있다
 
@@ -74,7 +74,7 @@ description: SlimeTD-Data의 Sheets/*.csv와 Sheets/Waves/*.csv 기획 데이터
 31. **웨이브 파일**: `wave`가 1부터 빠짐없이 이어지고, 웨이브마다 `order`가 1부터 빠짐없이 이어진다. count ≥ 1, delay ≥ 0. 마지막 웨이브 번호(최종 웨이브)를 보고에 적는다
 32. **Items**
     - Currency: targetId, openMode 비움
-    - HunterCardPack: targetId 필수, openMode=OnAcquire
+    - itemType은 `Currency`만 쓴다 (헌터 카드 팩 아이템은 2026-11-24에 없앴다: 팩은 상점에서 팩 티켓으로만 연다)
     - openMode=OnAcquire면 scope 비움, openMode가 비면 scope(Account/Battle) 필수
 33. **NewAccount**: amount ≥ 1, scope=Battle 아이템(골드, 젤리)은 지급할 수 없다
     - **Items 재화**: 서버가 codeName으로 찾는 계정 재화 `Coin`, `Diamond`, `Exp`, `PackTicket`, `Energy`가 모두 있다 (없으면 서버가 시작하지 않으므로 오류)
