@@ -70,14 +70,14 @@ description: SlimeTD-Data의 Sheets/*.csv와 Sheets/Waves/*.csv 기획 데이터
 27. **Grades**: baseAttack > 0, attackGrowthRate/gachaWeight ≥ 0
 28. **뽑기**: 팩 cardCount ≥ 1, price ≥ 0 (팩 티켓). 설정은 `maxLevelRefundCoin` ≥ 0 하나뿐이다. 천장·잠긴 카드 키(`lockedCardChance`, `pityCount`, `pityGradeId`)가 남아 있으면 경고 (2026-11-24 삭제됨)
 29. **Slimes**: Boss는 `instantGameOver` 필수, Normal은 비운다(경고). `renderGroup`이 `kind`와 다르면 경고. baseHealth, baseSpeed > 0, lifeCost, goldReward ≥ 0
-30. **Stages**: startingLife ≥ 1, startingGold ≥ 0, spawnInterval > 0, interWaveDelay ≥ 0, normalHpGrowth ≥ 0. `enabled`가 1인 스테이지가 하나 이상 있다
+30. **Stages**: startingLife ≥ 1, startingGold ≥ 0, spawnInterval > 0, interWaveDelay ≥ 0, normalHpGrowth ≥ 0, clearExp ≥ 0 (정수). `enabled`가 1인 스테이지가 하나 이상 있다
 31. **웨이브 파일**: `wave`가 1부터 빠짐없이 이어지고, 웨이브마다 `order`가 1부터 빠짐없이 이어진다. count ≥ 1, delay ≥ 0. 마지막 웨이브 번호(최종 웨이브)를 보고에 적는다
 32. **Items**
     - Currency: targetId, openMode 비움
     - itemType은 `Currency`만 쓴다 (헌터 카드 팩 아이템은 2026-11-24에 없앴다: 팩은 상점에서 팩 티켓으로만 연다)
     - openMode=OnAcquire면 scope 비움, openMode가 비면 scope(Account/Battle) 필수
 33. **NewAccount**: amount ≥ 1, scope=Battle 아이템(골드, 젤리)은 지급할 수 없다
-    - **Items 재화**: 서버가 codeName으로 찾는 계정 재화 `Coin`, `Diamond`, `Exp`, `PackTicket`, `Energy`가 모두 있다 (없으면 서버가 시작하지 않으므로 오류)
+    - **Items 재화**: 서버가 codeName으로 찾는 계정 재화 `Coin`, `Diamond`, `PackTicket`, `Energy`가 모두 있다 (없으면 서버가 시작하지 않으므로 오류). 없앤 번호(1000005, 2100000~)를 쓰면 오류
 34. **GameConstants**: README의 키가 모두 있다. summonBaseCost/summonCostIncrease ≥ 0, slowMinSpeedRatio·bossSlowScale 0~1. energy.max ≥ 1, energy.costPerBattle ≥ 0 (최대치보다 크면 오류: 시간 회복만으로는 시작할 수 없음), energy.recoverMinutes > 0, userLevel.expBase ≥ 1, userLevel.expPerLevel ≥ 0, reward.segmentWaves ≥ 1, reward.failRate 0~1
     - **StageRewards**: rewardType은 `Clear`/`FirstClear`, itemId는 계정 재화(scope=Account, itemType=Currency), amount ≥ 1, (stageId, rewardType, itemId)가 중복되지 않는다. `enabled`인 스테이지에 `Clear` 줄이 없으면 경고. 각 스테이지의 최종 웨이브가 `reward.segmentWaves`로 나누어떨어지지 않으면 경고 (마지막 구간이 짧아진다)
 
