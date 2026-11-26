@@ -28,10 +28,12 @@ SkillEffectType,GoldGain,7,골드 획득
 SkillEffectType,DamageMultiplier,8,피해 배율
 SkillEffectType,Splash,9,광역
 SkillEffectType,Stun,10,기절
+SkillEffectType,Cross,11,십자 범위
 VfxAnchor,Root,0,발밑 (클라이언트 값)
 VfxAnchor,Center,1,몸 중앙
 VfxAnchor,Head,2,머리
 VfxAnchor,Front,3,앞
+VfxAnchor,Target,4,맞은 적 위치
 TowerAttackType,Melee,0,근접 (클라이언트 값)
 TowerAttackType,Projectile,1,투사체
 TowerAttackType,Beam,2,즉시 타격 빔

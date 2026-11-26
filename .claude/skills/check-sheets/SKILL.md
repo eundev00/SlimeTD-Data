@@ -61,7 +61,7 @@ description: SlimeTD-Data의 Sheets/*.csv와 Sheets/Waves/*.csv 기획 데이터
     - `upgradeOf`가 있으면 같은 타워의 스킬이고, 대체 대상의 해금 레벨이 더 낮다. 자기 자신은 안 된다
     - `trigger=EveryNthAttack`이면 `nth`가 1 이상, 아니면 `nth`는 비운다
     - `chance`는 0 초과 100 이하, `cooldown`은 0 이상, `duration`은 0보다 크다
-    - `value` 단위: AttackSpeed/DamageMultiplier/Slow는 퍼센트(%)만, Attack은 둘 다, 나머지(CritChance, CritBonus, MultiShot, Pierce, GoldGain, Splash, Stun)는 고정값만
+    - `value` 단위: AttackSpeed/DamageMultiplier/Slow는 퍼센트(%)만, Attack은 둘 다, 나머지(CritChance, CritBonus, MultiShot, Pierce, GoldGain, Splash, Stun, Cross)는 고정값만
     - Slow는 `duration` 필수, 1등급 타워의 Slow는 최대 5%
     - Stun은 `duration` 필수. `value`는 쓰지 않지만 클라이언트 임포터 때문에 비우지 않는다
 25. **LevelUpCosts**: Grades의 모든 등급에 레벨 1~14가 빠짐없이 있다. `cards`, `coin`은 0 이상. `Grades.gachaWeight`가 0인 등급(뽑기에서 안 나옴)은 `cards`가 모두 0이어야 한다 (아니면 카드를 얻을 길이 없어 오류). 같은 등급 안에서 레벨이 오를수록 cards·coin이 줄어들면 경고

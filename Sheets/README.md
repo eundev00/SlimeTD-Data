@@ -162,7 +162,7 @@
 | value | 수치. `%`를 붙이면 퍼센트, 없으면 고정값 |
 | duration | 지속 시간(초). 비우면 상시 |
 | vfxKey | 스킬이 발동할 때 재생할 연출 프리팹 이름 (PrefabKeys). 비우면 연출 없음 |
-| vfxAnchor | 연출을 붙일 타워 앵커: `Root`(발밑) / `Center` / `Head` / `Front`. 비우면 Root. 타워 프리팹의 `TowerVfxAnchors`에 지정하지 않은 앵커는 Root로 대신한다 |
+| vfxAnchor | 연출을 붙일 타워 앵커: `Root`(발밑) / `Center` / `Head` / `Front`. 비우면 Root. 타워 프리팹의 `TowerVfxAnchors`에 지정하지 않은 앵커는 Root로 대신한다. `Target`이면 타워가 아니라 스킬에 맞은 슬라임마다 그 위치에 띄운다 |
 | animTrigger | 스킬이 발동한 공격에 쓸 애니메이터 트리거 (예: `AttackJump`). 비우면 기본 `Attack`. 타워 애니메이터에 그 트리거와 State가 있어야 하고, 클립에 `OnAttackHit`/`OnAttackEnd`(연출을 휘두르는 순간에 띄우려면 `OnAttackCast`도) 이벤트가 있어야 한다 |
 
 스킬 발동과 치명타는 공격 시작 시점에 판정한다. 연출은 클립의 `OnAttackCast`(없으면 `OnAttackHit`)에서, 데미지는 `OnAttackHit`에서 들어간다.
@@ -184,8 +184,9 @@
 | Splash | 고정만 | 맞은 대상 중심 반경 N 안의 다른 슬라임에게 **같은 데미지**를 준다 (중심 대상 제외, 화살은 첫 타격 때 한 번만) |
 | GoldGain | 고정만 | 골드 +N (인게임). 공격 1회마다 확률 판정 후 바로 얻는다 (OnAttack) |
 | Stun | 고정만 | 맞은 적을 `duration`(초) 동안 기절시킨다. **value는 쓰지 않는다.** 비우지 않고 1을 넣어 둔다 |
+| Cross | 고정만 | 발동한 공격은 투사체 없이 타격 순간 바로 들어간다. 맞은 대상과, 그 위치에서 앞뒤좌우 N칸(한 칸 = 1) 안의 슬라임에게 **같은 데미지**를 준다 (십자 모양) |
 
-**스킬이 발동한 공격은 치명타 판정을 하지 않는다.** 데미지에 영향을 주는 OnAttack 스킬(MultiShot, DamageMultiplier, Splash)이 터지면 그 공격의 화살 전부가 치명타 없이 같은 데미지가 된다. Always 패시브와 GoldGain은 해당하지 않는다. chance와 cooldown은 함께 쓸 수 있고, 쿨타임은 공격속도와 무관하게 발동했을 때부터 흐른다.
+**스킬이 발동한 공격은 치명타 판정을 하지 않는다.** 데미지에 영향을 주는 OnAttack 스킬(MultiShot, DamageMultiplier, Splash, Cross)이 터지면 그 공격의 화살 전부가 치명타 없이 같은 데미지가 된다. Always 패시브와 GoldGain은 해당하지 않는다. chance와 cooldown은 함께 쓸 수 있고, 쿨타임은 공격속도와 무관하게 발동했을 때부터 흐른다.
 
 허용되지 않는 단위를 쓰거나 해석할 수 없는 값이 있는 행은 클라이언트에 반영하지 않고 보고한다.
 
