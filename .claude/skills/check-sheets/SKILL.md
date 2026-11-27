@@ -18,9 +18,9 @@ description: SlimeTD-Data의 Sheets/*.csv와 Sheets/Waves/*.csv 기획 데이터
 
 ## 시트 목록
 
-- 표 형식: Enums, Grades, LevelUpCosts, Towers, TowerProjectiles, Skills, HunterCardGachaPacks, Slimes, Stages, StageRewards, Items, NewAccount
+- 표 형식: Enums, Grades, LevelUpCosts, Towers, TowerProjectiles, Skills, HunterCardGachaPacks, Slimes, CoopStages, SingleStages, StageRewards, Items, NewAccount
 - `key,value` 형식: HunterCardGachaSettings, GameConstants
-- 스테이지 웨이브: `Waves/<Stages.codeName>.csv` (스테이지마다 하나)
+- 스테이지 웨이브: `Waves/<codeName>.csv` (CoopStages·SingleStages의 스테이지마다 하나)
 
 ## 검사 항목
 
@@ -42,9 +42,9 @@ description: SlimeTD-Data의 Sheets/*.csv와 Sheets/Waves/*.csv 기획 데이터
 11. ID 자릿수: 등급 1, 스테이지 2, 타워 3, 뽑기 팩 4, 스킬 5, 슬라임 6, 아이템 7
 12. 모든 시트의 ID를 통틀어 같은 값이 없다 (이넘 value는 ID가 아니므로 제외)
 13. 스킬 ID = 타워ID×100+순번 (`skillId / 100 == towerId`)
-14. 스테이지 ID = `GameMode` 값 × 10 + `Difficulty` 값 (싱글 보통 = 11)
+14. 스테이지 ID: `CoopStages`는 11~19, `SingleStages`는 21 이상. 두 시트를 합쳐 중복이 없다
 15. 아이템 ID: 재화 1000001~1999999, 특정 헌터 카드(예정) = 2000000+타워ID. 2100000~ 대역(없앤 헌터 카드 팩 아이템)을 쓰면 오류
-16. `codeName`이 시트 안에서 중복되지 않는다 (Towers, Slimes, Stages, Items)
+16. `codeName`이 시트 안에서 중복되지 않는다 (Towers, Slimes, Items). 스테이지는 CoopStages·SingleStages를 합쳐 중복되지 않는다 (웨이브 파일 이름이므로)
 
 ### D. 참조
 17. `Towers.gradeId`, `LevelUpCosts.gradeId`, `GameConstants.summonGradeId` → Grades
@@ -52,8 +52,8 @@ description: SlimeTD-Data의 Sheets/*.csv와 Sheets/Waves/*.csv 기획 데이터
 19. `Skills.towerId`, `TowerProjectiles.towerId` → Towers, `Skills.upgradeOf` → Skills
 20. 웨이브 파일의 `slimeId` → Slimes
 21. `Items.targetId` → `HunterCard`(예정)면 Towers.towerId. 다른 타입은 비운다
-22. `NewAccount.itemId`, `StageRewards.itemId` → Items, `StageRewards.stageId` → Stages
-23. `Stages`의 행마다 `Waves/<codeName>.csv`가 있고, `Waves/` 안의 파일마다 `Stages`에 같은 codeName의 행이 있다
+22. `NewAccount.itemId`, `StageRewards.itemId` → Items, `StageRewards.stageId` → CoopStages 또는 SingleStages
+23. `CoopStages`·`SingleStages`의 행마다 `Waves/<codeName>.csv`가 있고, `Waves/` 안의 파일마다 두 시트 중 하나에 같은 codeName의 행이 있다
 
 ### E. 게임 규칙
 24. **Skills**
@@ -70,7 +70,7 @@ description: SlimeTD-Data의 Sheets/*.csv와 Sheets/Waves/*.csv 기획 데이터
 27. **Grades**: baseAttack > 0, attackGrowthRate/gachaWeight ≥ 0
 28. **뽑기**: 팩 cardCount ≥ 1, price ≥ 0 (팩 티켓). 설정은 `maxLevelRefundCoin` ≥ 0 하나뿐이다. 천장·잠긴 카드 키(`lockedCardChance`, `pityCount`, `pityGradeId`)가 남아 있으면 경고 (2026-11-24 삭제됨)
 29. **Slimes**: Boss는 `instantGameOver` 필수, Normal은 비운다(경고). `renderGroup`이 `kind`와 다르면 경고. baseHealth, baseSpeed > 0, lifeCost, goldReward ≥ 0
-30. **Stages**: startingLife ≥ 1, startingGold ≥ 0, spawnInterval > 0, interWaveDelay ≥ 0, normalHpGrowth ≥ 0. `enabled`가 1인 스테이지가 하나 이상 있다
+30. **CoopStages, SingleStages**: CoopStages.difficulty는 `Difficulty` 이넘 값. startingLife ≥ 1, startingGold ≥ 0, spawnInterval > 0, interWaveDelay ≥ 0, normalHpGrowth ≥ 0. `enabled`가 1인 스테이지가 하나 이상 있다
 31. **웨이브 파일**: `wave`가 1부터 빠짐없이 이어지고, 웨이브마다 `order`가 1부터 빠짐없이 이어진다. count ≥ 1, delay ≥ 0. 마지막 웨이브 번호(최종 웨이브)를 보고에 적는다
 32. **Items**
     - Currency: targetId, openMode 비움

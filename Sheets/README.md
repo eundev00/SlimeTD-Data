@@ -16,7 +16,7 @@
 | 타워 | 101~ (3자리) |
 | 스킬 | 타워ID×100+순번 (궁수 10101~, 일병 10301~). 추가는 그 타워의 다음 빈 번호 |
 | 뽑기 팩 | 1001~ (4자리) |
-| 스테이지 | 2자리. 앞자리 = 모드(`GameMode` 값), 뒷자리 = 난이도(`Difficulty` 값). 11 싱글 보통, 12 싱글 어려움, 13 싱글 지옥, 21 멀티 보통, 22 멀티 어려움, 23 멀티 지옥 |
+| 스테이지 | 협동 11~19 (난이도 순서, `CoopStages.csv`), 싱글 21~ (맵마다 하나, 계속 늘어남, `SingleStages.csv`). 2026-11-27에 번호를 바꿨다 (그전에는 11 싱글 보통, 21 멀티 보통) |
 | 슬라임 | 6자리. 일반 100001~, 보스 100101~ (등장 순서대로 번호를 붙인다) |
 | 아이템 | 7자리. 재화 1000001~, 특정 헌터 카드 2000000+타워ID (예정, 궁수 101 → 2000101). 2026-11-24에 없앤 번호는 다시 쓰지 않는다: 1000005(경험치, 유저 레벨과 함께 삭제), 2100000~ 대역(헌터 카드 팩 아이템) |
 
@@ -34,7 +34,7 @@
 | Skills | vfxKey, vfxAnchor | client | 연출용 |
 | Skills | animTrigger | client | 연출용. 단, 공격 타격 시점은 애니메이션 클립이 정하므로 서버용 타이밍 데이터가 따로 필요하다 (미정) |
 | Slimes | renderGroup | client | 렌더링 순서용 |
-| Stages | name | client | 화면 표시용 |
+| CoopStages, SingleStages | name | client | 화면 표시용 |
 | Enums | description | client | 설명용 |
 | Items | name | client | 화면 표시용 |
 | NewAccount | (전체) | server | 새 계정 생성은 서버만 한다 |
@@ -57,8 +57,8 @@
 
 | 시트.열 | 이넘 |
 |---|---|
-| Stages.mode | GameMode |
-| Stages.difficulty | Difficulty |
+| CoopStages.difficulty | Difficulty |
+| (클라이언트 `StageData` 에셋) | GameMode (`Single` 1 / `Coop` 2. 시트가 모드별로 나뉘어 시트 열로는 쓰지 않는다) |
 | Towers.attackType | TowerAttackType |
 | Skills.trigger | SkillTrigger |
 | Skills.effectType | SkillEffectType |
@@ -206,16 +206,21 @@
 | instantGameOver | 보스만. 1이면 경로 끝 도달 시 즉시 게임오버, 0이면 `lifeCost`만큼 차감. 일반은 비운다. **지금은 모든 보스가 0(라이프 10 차감)**이다 |
 | renderGroup | 렌더링 버킷 `Normal` / `Boss` |
 
-## Stages.csv
+## CoopStages.csv, SingleStages.csv
 
-스테이지 = 플레이어가 고르는 게임 하나 (모드 × 난이도). 웨이브는 `Waves/<codeName>.csv`에 있다. 지금은 싱글 보통(11)과 멀티 보통(21)이 있고, 나머지는 만들 때 ID 규칙대로 추가한다. 멀티는 두 사람이 맵 하나를 같이 막는 협동이다. 맵 입구가 여럿이면 무리마다 슬라임을 입구에 번갈아 내보내 입구마다 같은 수가 나온다 (멀티 보통은 싱글 보통 웨이브를 복사해 시작했다)
+스테이지 = 플레이어가 고르는 게임 하나. 모드마다 시트가 따로다 (2026-11-27 사용자 결정, 그전에는 `Stages.csv` 하나였다). 웨이브는 `Waves/<codeName>.csv`에 있다.
+
+- **협동** (`CoopStages.csv`, 11~19): 메인 모드. 두 사람이 맵 하나를 같이 막는다. 난이도(보통·어려움·지옥…)를 골라 들어가고, 난이도 하나가 스테이지 하나다. 이름은 `Coop` + 난이도 (`CoopNormal`). 맵 입구가 여럿이면 무리마다 슬라임을 입구에 번갈아 내보내 입구마다 같은 수가 나온다 (협동 보통은 싱글 웨이브를 복사해 시작했다)
+- **싱글** (`SingleStages.csv`, 21~): 탐험(가제). 맵마다 스테이지 하나이고, 맵 자체가 난이도다. 이름은 `Single` + 맵 (`SingleForest01`). 탐험 이름이 확정되면 접두어를 바꾼다
+- 스테이지 이름(codeName)에 번호를 넣지 않는다 (번호는 `stageId` 열에만)
+
+두 시트의 공통 열:
 
 | 열 | 설명 |
 |---|---|
-| stageId | 스테이지 ID (2자리, ID 규칙 참고) |
-| codeName | 영문 코드명. 웨이브 파일 이름이 된다 (`SingleNormal` → `Waves/SingleNormal.csv`) |
-| mode | `GameMode` (`Single` / `Multi`) |
-| difficulty | `Difficulty` (`Normal` / `Hard` / `Hell`) |
+| stageId | 스테이지 ID (ID 규칙 참고. 협동 11~19, 싱글 21~) |
+| codeName | 영문 코드명. 웨이브 파일 이름이 된다 (`CoopNormal` → `Waves/CoopNormal.csv`). 클라이언트 스테이지 에셋은 `Stage_<codeName>` |
+| difficulty | **협동만.** `Difficulty` (`Normal` / `Hard` / `Hell`) |
 | name | 화면에 보이는 이름 |
 | enabled | 1/0. 0이면 고를 수 없다 |
 | startingLife | 시작 라이프 |
@@ -230,19 +235,19 @@
 
 | 열 | 설명 |
 |---|---|
-| stageId | `Stages.csv` stageId |
+| stageId | `CoopStages.csv` 또는 `SingleStages.csv`의 stageId |
 | rewardType | `Clear`: 클리어 보상 (실패하면 줄여서 준다) / `FirstClear`: 그 스테이지를 처음 클리어할 때 한 번 |
 | itemId | `Items.csv` itemId. 계정 재화(`scope=Account`, `itemType=Currency`)만 |
 | amount | 지급 수량 (1 이상) |
 
 - 클리어(마지막 웨이브까지 다 막음): `Clear` 보상 전부. 처음이면 `FirstClear` 보상도
 - 실패: `Clear` 보상 × (통과 구간 ÷ 전체 구간) × `GameConstants.reward.failRate`, 버림. 통과 구간 = 도달 웨이브 ÷ `reward.segmentWaves`, 전체 구간 = 최종 웨이브 ÷ `reward.segmentWaves` (둘 다 버림). 첫 구간을 못 넘기면 보상이 없다
-- 예) 싱글 보통(50웨이브, 10웨이브 구간) 30웨이브 실패 → 3/5 × 0.5 = 0.3 → 팩 티켓 117, 코인 210
-지금 값 (2026-11-24, `Doc/슬라임TD_메타재화밸런스.md` 5장): 싱글 보통(11) 클리어 = 팩 티켓 390, 코인 700 / 최초 클리어 = 다이아 10. 문서의 경험치 보상과 유저 레벨은 뚜렷한 보상이 없어 넣지 않았다 (2026-11-24 사용자 결정)
+- 예) 싱글 숲 1(50웨이브, 10웨이브 구간) 30웨이브 실패 → 3/5 × 0.5 = 0.3 → 팩 티켓 117, 코인 210
+지금 값 (2026-11-24, `Doc/슬라임TD_메타재화밸런스.md` 5장): 싱글 숲 1(21, 옛 싱글 보통) 클리어 = 팩 티켓 390, 코인 700 / 최초 클리어 = 다이아 10. 문서의 경험치 보상과 유저 레벨은 뚜렷한 보상이 없어 넣지 않았다 (2026-11-24 사용자 결정)
 
 ## Waves/<codeName>.csv
 
-한 스테이지의 웨이브. 파일 하나가 스테이지 하나이고, 파일 이름이 `Stages.codeName`이다. **한 행이 한 웨이브에 나오는 몬스터 한 무리**다.
+한 스테이지의 웨이브. 파일 하나가 스테이지 하나이고, 파일 이름이 스테이지 시트의 `codeName`이다. **한 행이 한 웨이브에 나오는 몬스터 한 무리**다.
 
 | 열 | 설명 |
 |---|---|
@@ -255,7 +260,7 @@
 - 진행: 웨이브 시작 → 무리를 `order` 순서대로 내보낸다 (무리 앞에 `delay`, 무리 안 슬라임은 `spawnInterval` 간격) → 다 나오면 `interWaveDelay` 후 다음 웨이브. 이전 웨이브 슬라임이 남아 있어도 넘어가고, 마지막 웨이브만 슬라임이 모두 처리돼야 클리어다
 - 보스(`kind=Boss`)가 있는 웨이브가 보스 웨이브다. 따로 표시하지 않는다. 보스 웨이브도 일반 슬라임이 먼저 나오고, 보스 무리의 `delay`만큼 기다린 뒤 보스가 나온다
 - HP: 일반 = `baseHealth × (1 + normalHpGrowth)^(웨이브 - 1)`, 보스 = `baseHealth`
-- `SingleNormal`은 10웨이브 구간 5개다. 구간마다 웨이브 1~10에 그 구간의 일반 슬라임이 나오고, 10번째 웨이브는 일반 슬라임 뒤에 보스가 추가 대기(1·2구간 0.5초, 3~5구간 1초) 후 나온다. 슬라임 종류, 마릿수, 대기는 처음에 클라이언트 `WaveEasyTable` 에셋 값을 옮겨 만들었다. 클라이언트는 이 시트를 `StageData` 에셋으로 옮겨 그대로 쓴다
+- `SingleForest01`(옛 `SingleNormal`)은 10웨이브 구간 5개다. `CoopNormal`은 이걸 복사해 시작했다. 구간마다 웨이브 1~10에 그 구간의 일반 슬라임이 나오고, 10번째 웨이브는 일반 슬라임 뒤에 보스가 추가 대기(1·2구간 0.5초, 3~5구간 1초) 후 나온다. 슬라임 종류, 마릿수, 대기는 처음에 클라이언트 `WaveEasyTable` 에셋 값을 옮겨 만들었다. 클라이언트는 이 시트를 `StageData` 에셋으로 옮겨 그대로 쓴다
 - 이벤트가 생기면 열을 추가하거나 짝 파일(`Waves/<codeName>.Events.csv`)을 둔다
 
 ## Items.csv
@@ -287,7 +292,7 @@
 
 ## GameConstants.csv
 
-게임 전역 상수. 행이 하나뿐인 값은 모두 여기에 둔다 (인게임 전투 규칙과 계정 성장 규칙). `key,value` 두 열이다. 값이 늘면 키에 묶음 접두어(`summon.` 등)를 붙인다. 처음 값은 클라이언트 `GameConfig` 에셋에서 옮겼다 (에셋에 저장되지 않은 값은 코드 기본값을 옮겼다). 스테이지마다 다를 수 있는 값(시작 라이프, 시작 골드)은 `Stages.csv`에 둔다. 디버그용 값(`ignoreGoldCost`, `autoStartWave`, `testTower`, `debugTowerLevel`)은 클라이언트 개발 설정이라 넣지 않는다.
+게임 전역 상수. 행이 하나뿐인 값은 모두 여기에 둔다 (인게임 전투 규칙과 계정 성장 규칙). `key,value` 두 열이다. 값이 늘면 키에 묶음 접두어(`summon.` 등)를 붙인다. 처음 값은 클라이언트 `GameConfig` 에셋에서 옮겼다 (에셋에 저장되지 않은 값은 코드 기본값을 옮겼다). 스테이지마다 다를 수 있는 값(시작 라이프, 시작 골드)은 스테이지 시트(`CoopStages.csv`, `SingleStages.csv`)에 둔다. 디버그용 값(`ignoreGoldCost`, `autoStartWave`, `testTower`, `debugTowerLevel`)은 클라이언트 개발 설정이라 넣지 않는다.
 
 | key | 설명 |
 |---|---|

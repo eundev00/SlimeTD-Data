@@ -1,0 +1,2 @@
+﻿stageId,codeName,difficulty,name,enabled,startingLife,startingGold,spawnInterval,interWaveDelay,normalHpGrowth,mapKey
+11,CoopNormal,Normal,협동 보통,1,10,50,0.8,2,0.06,Map_Coop01

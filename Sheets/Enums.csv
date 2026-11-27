@@ -1,6 +1,6 @@
 ﻿enumName,name,value,description
 GameMode,Single,1,싱글
-GameMode,Multi,2,멀티
+GameMode,Coop,2,협동
 Difficulty,Normal,1,보통
 Difficulty,Hard,2,어려움
 Difficulty,Hell,3,지옥

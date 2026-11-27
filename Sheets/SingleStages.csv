@@ -1,0 +1,2 @@
+﻿stageId,codeName,name,enabled,startingLife,startingGold,spawnInterval,interWaveDelay,normalHpGrowth,mapKey
+21,SingleForest01,숲 1,1,10,50,0.8,2,0.06,Map_Forest01
