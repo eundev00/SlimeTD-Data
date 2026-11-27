@@ -32,7 +32,7 @@
 | Towers | name | client | 화면 표시용 |
 | Skills | name, description | client | 화면 표시용 |
 | Skills | vfxKey, vfxAnchor | client | 연출용 |
-| Skills | animTrigger | client | 연출용. 단, 공격 타격 시점은 애니메이션 클립이 정하므로 서버용 타이밍 데이터가 따로 필요하다 (미정) |
+| Skills | animTrigger | client | 연출용. 공격 타격 시점은 `attackHitDelay`·`attackDuration` 열이 정한다 (both) |
 | Slimes | renderGroup | client | 렌더링 순서용 |
 | CoopStages, SingleStages | name | client | 화면 표시용 |
 | Enums | description | client | 설명용 |
@@ -109,6 +109,10 @@
 | startUnlocked | 시작 해금 (1/0). 타워마다 지정한다. 비우면 잠금. **기본 정책: 일반·희귀·영웅 헌터는 모두 1(레벨 1로 보유한 채 시작). 전설은 0 (다이아 구매 또는 이벤트 지급)** |
 | unlockDiamondPrice | 해금 다이아 가격 (0 = 구매 불가). 전설 가격은 미정 |
 | inGacha | 뽑기 대상 (1/0). 비우면 1. 뽑기에서는 해금(보유)한 헌터 카드만 나온다 (잠긴 헌터는 나오지 않는다) |
+| attackHitDelay | 공격 시작부터 타격(투사체는 발사)까지 걸리는 시간(초, 공격속도 1 기준). **비우면 `GameConstants` `hunter.attackHitDelay`** |
+| attackDuration | 공격 모션 전체 길이(초, 공격속도 1 기준). 쿨다운은 이 뒤부터 흐른다. **비우면 `GameConstants` `hunter.attackDuration`** |
+
+**공격 시점은 시트가 기준이다** (2026-11-27 사용자 결정). 서버는 애니메이션을 돌리지 않으므로 타격 시점을 이 값으로 판정한다 (협동). 실제 시점 = 값 ÷ 공격속도. 클라이언트는 공격 모션을 재생할 때 클립의 `OnAttackHit` 이벤트가 이 시점에 오도록 재생 속도를 맞춘다 (재생 속도 = 클립 타격 시각 ÷ `attackHitDelay` × 공격속도). 그래서 **애니메이션을 고쳐도 시트는 고치지 않는다.** 시트는 공격 템포를 밸런스로 바꿀 때만 고친다. 대부분의 헌터는 비워 기본값을 쓰고, 템포가 특별한 헌터만 값을 넣는다. 처음 값은 2026-11-27 클립에서 옮겼다 (궁수·레인저는 당기기 클립 81.25%에서 놓기로 넘어가 0.033초 뒤 타격, 기본값은 칼 계열 `Sword_Attack`).
 
 ## TowerProjectiles.csv
 
@@ -164,6 +168,8 @@
 | vfxKey | 스킬이 발동할 때 재생할 연출 프리팹 이름 (PrefabKeys). 비우면 연출 없음 |
 | vfxAnchor | 연출을 붙일 타워 앵커: `Root`(발밑) / `Center` / `Head` / `Front`. 비우면 Root. 타워 프리팹의 `TowerVfxAnchors`에 지정하지 않은 앵커는 Root로 대신한다. `Target`이면 타워가 아니라 스킬에 맞은 슬라임마다 그 위치에 띄운다 |
 | animTrigger | 스킬이 발동한 공격에 쓸 애니메이터 트리거 (예: `AttackJump`). 비우면 기본 `Attack`. 타워 애니메이터에 그 트리거와 State가 있어야 하고, 클립에 `OnAttackHit`/`OnAttackEnd`(연출을 휘두르는 순간에 띄우려면 `OnAttackCast`도) 이벤트가 있어야 한다 |
+| attackHitDelay | 이 스킬이 발동한 공격의 타격 시점(초, 공격속도 1 기준). 전용 모션(`animTrigger`)이 있는 스킬만. **비우면 그 타워의 값** (`Towers.csv`, 거기도 비면 기본값) |
+| attackDuration | 이 스킬이 발동한 공격의 모션 길이(초). 비우면 그 타워의 값 |
 
 스킬 발동과 치명타는 공격 시작 시점에 판정한다. 연출은 클립의 `OnAttackCast`(없으면 `OnAttackHit`)에서, 데미지는 `OnAttackHit`에서 들어간다.
 
@@ -301,6 +307,8 @@
 | summonGradeId | 소환 등급 |
 | slowMinSpeedRatio | 감속 하한. 기본 속도의 이 비율 밑으로 내려가지 않는다 |
 | bossSlowScale | 보스에게 걸리는 감속 비율 |
+| hunter.attackHitDelay | 헌터 공격 타격 시점 기본값(초, 공격속도 1 기준). `Towers.csv`에서 비운 헌터가 쓴다 |
+| hunter.attackDuration | 헌터 공격 모션 길이 기본값(초, 공격속도 1 기준) |
 | energy.max | 에너지 시간 회복 최대치. 보상·이벤트로는 넘겨 가질 수 있다 |
 | energy.costPerBattle | 스테이지 1판 에너지 (싱글 시작 요청 때 쓴다. 모자라면 시작할 수 없다) |
 | energy.recoverMinutes | 에너지 1 회복에 걸리는 분 (최대치까지) |
