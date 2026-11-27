@@ -39,4 +39,5 @@ description: 클라이언트(C:\Projects\SlimeTD) 프리팹과 애니메이션�
 5. 상태의 `m_Speed`가 1이 아니면 시각을 그 값으로 나눈다. 속도 파라미터(`AttackSpeed` 등)는 공격속도 배율이라 1로 본다
 6. `attackHitDelay` = 타격 시각, `attackDuration` = 끝 시각 (둘째 자리 반올림)
 7. `GameConstants`의 `hunter.attackHitDelay`, `hunter.attackDuration`과 같으면 비운다. 스킬은 그 타워 값과 같으면 비운다
+   - 기본값의 기준 모션인 칼 계열 기본 공격(`SwordAnimator`의 `Attack` 상태, `Sword_Attack` 클립)을 쓰는 헌터는 값이 조금 달라도(모션 1.07초 vs 기본값 1초) 비운다. 모션 길이는 연출용이고 공격 간격은 `attackInterval`이 정한다
 8. `OnAttackHit`이나 `OnAttackEnd`가 없으면 값을 넣지 않고 보고한다 (클라이언트는 둘 다 있어야 공격이 끝난다)
