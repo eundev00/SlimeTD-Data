@@ -65,7 +65,7 @@ description: SlimeTD-Data의 Sheets/*.csv와 Sheets/Waves/*.csv 기획 데이터
     - Slow는 `duration` 필수, 1등급 타워의 Slow는 최대 5%
     - Stun은 `duration` 필수. `value`는 쓰지 않지만 클라이언트 임포터 때문에 비우지 않는다
 25. **LevelUpCosts**: Grades의 모든 등급에 레벨 1~14가 빠짐없이 있다. `cards`, `coin`은 0 이상. `Grades.gachaWeight`가 0인 등급(뽑기에서 안 나옴)은 `cards`가 모두 0이어야 한다 (아니면 카드를 얻을 길이 없어 오류). 같은 등급 안에서 레벨이 오를수록 cards·coin이 줄어들면 경고
-26. **Towers**: attackRange, attackCooldown > 0, critChance 0~100, critBonus/unlockDiamondPrice ≥ 0. 일반·희귀·영웅(`gachaWeight` > 0인 등급) 헌터의 `startUnlocked`가 1이 아니면 경고 (정책: 시작부터 보유). 잠긴 헌터인데 `unlockDiamondPrice`가 0이면 경고 (구매 불가, 전설 가격 미정이면 이벤트 지급만 가능)
+26. **Towers**: attackRange, attackInterval > 0, 타격 시점(`attackHitDelay`, 비면 `hunter.attackHitDelay`) < `attackInterval` (전용 모션 스킬의 `attackHitDelay`도 그 타워 간격보다 짧다), critChance 0~100, critBonus/unlockDiamondPrice ≥ 0. 일반·희귀·영웅(`gachaWeight` > 0인 등급) 헌터의 `startUnlocked`가 1이 아니면 경고 (정책: 시작부터 보유). 잠긴 헌터인데 `unlockDiamondPrice`가 0이면 경고 (구매 불가, 전설 가격 미정이면 이벤트 지급만 가능)
     - **TowerProjectiles**: `attackType=Projectile`인 타워는 행이 반드시 있고, 다른 타워는 행이 없다. speed, hitRadius, lifetime > 0
 27. **Grades**: baseAttack > 0, attackGrowthRate/gachaWeight ≥ 0
 28. **뽑기**: 팩 cardCount ≥ 1, price ≥ 0 (팩 티켓). 설정은 `maxLevelRefundCoin` ≥ 0 하나뿐이다. 천장·잠긴 카드 키(`lockedCardChance`, `pityCount`, `pityGradeId`)가 남아 있으면 경고 (2026-11-24 삭제됨)
