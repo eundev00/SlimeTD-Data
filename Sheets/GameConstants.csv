@@ -11,3 +11,4 @@ reward.failRate,0.5
 reward.segmentWaves,10
 hunter.attackHitDelay,0.63
 hunter.attackDuration,1.07
+hunter.spawnAttackDelay,1
